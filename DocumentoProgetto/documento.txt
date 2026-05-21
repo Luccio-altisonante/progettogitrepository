@@ -1,0 +1,73 @@
+PROGETTO ASD 2025/2026 Luca Montanelli 690125
+
+Analisi di grafi di Autonomous Systems (AS).
+
+
+Obiettivo del progetto:
+
+L'obiettivo del progetto è la costruzione e l'analisi di un grafo pesato, costruito a partire
+da dati BGP relativi agli Autonomous Systems (AS) di Internet.
+Lo scopo finale è progettare degli algoritmi che permettano, dati due nodi u e v,
+di trovare il costo del cammino minimax ottimo da u a v.
+
+
+Nel grafo:
+- ogni nodo rappresenta un Autonomous System;
+- ogni arco rappresenta una connessione osservata nei percorsi BGP;
+- il peso di un arco rappresenta la frequenza con cui la connessione compare nei percorsi osservati.
+
+
+
+Prima idea di base del progetto completo:
+
+L'idea è dividere il lavoro in moduli separati:
+
+- lettura dei dataset;
+- costruzione del grafo;
+- gestione delle frequenze sugli archi;
+- ricerca della componente connessa maggiore;
+- costruzione di un Minimum Spanning Tree;
+- risoluzione del problema minimax;
+- verificare il corretto funzionamento con piccoli test.
+
+
+Si costruisce un Minimum Spanning Tree perché si intende sfruttare una proprietà data
+dalla sua costruzione, ossia che in un MST il cammino fra due nodi minimizza il valore
+del massimo arco attraversato.
+
+
+
+Strutture dati che verrano utilizzate:
+
+- liste di adiacenza per rappresentare il grafo;
+- hash tables (potenzialmente universal) per memorizzare le frequenze degli archi;
+- eventualmente altre strutture per la parte successiva 
+  alla gestione delle frequenze sugli archi.
+
+
+
+
+Organizzazione dei file del programma:
+
+Il progetto sarà organizzato in moduli separati, ciascuno suddiviso in:
+
+- un file ".hpp", contenente dichiarazioni di classi, strutture dati e funzioni;
+- un file ".cpp", contenente le relative implementazioni.
+
+Questa suddivisione permette ai vari moduli del progetto di comunicare tra loro tramite
+il comando "#include "file.hpp"", inoltre il progetto sarà più leggibile, 
+e dunque più facile da rimaneggiare nel tempo.
+
+
+In particolare, il modulo principale "main.cpp" utilizzerà gli header ".hpp" 
+per accedere alle funzioni implementate negli altri moduli.
+
+I moduli saranno:
+
+- "LetturaDataset";
+- "CostruzioneGrafo";
+- "GestioneFrequenze";
+- "ComponentiConnesse";
+- "ControlloDSU";
+- "CostruzioneMST";
+- "RisoluzioneMinimax".
