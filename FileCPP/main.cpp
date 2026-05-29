@@ -1,5 +1,6 @@
 #include <iostream>
 #include "../FileHPP/LettoreDataset.hpp"
+#include "../FileHPP/CostruzioneGrafo.hpp"
 
 using namespace std;
 
@@ -20,6 +21,28 @@ int main()
 
         cout << endl;
     }
+    
+    //fin qui prova di LettoreDataset
+
+    cout << endl;
+    cout << "Archi costruiti:" << endl;
+    cout << endl;
+
+    costruisciArchi();
+
+    stampaArchi();
+
+    cout << endl;
+    cout << "Grafo costruito:" << endl;
+    cout << endl;
+
+    costruisciGrafo();
+
+    stampaGrafo();
+
+    //fin qui prova di CostruzioneGrafo
+
+
 
     return 0;
 }
