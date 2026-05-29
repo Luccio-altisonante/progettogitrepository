@@ -51,20 +51,24 @@ Organizzazione dei file del programma:
 
 Il progetto sarà organizzato in moduli separati, ciascuno suddiviso in:
 
-- un file ".hpp", contenente dichiarazioni di classi, strutture dati e funzioni;
-- un file ".cpp", contenente le relative implementazioni.
+- un file ".hpp", che fungerà da header per essere letto dal main;
+- un file ".cpp", sostanzialmente identico al precedente, ma essendo .cpp 
+  permette di eseguire direttamente quel modulo qualora ce ne fosse bisogno.
 
 Questa suddivisione permette ai vari moduli del progetto di comunicare tra loro tramite
 il comando "#include "file.hpp"", inoltre il progetto sarà più leggibile, 
 e dunque più facile da rimaneggiare nel tempo.
 
-
 In particolare, il modulo principale "main.cpp" utilizzerà gli header ".hpp" 
 per accedere alle funzioni implementate negli altri moduli.
 
+Ho scelto di mettere per adesso all'interno dei file.hpp anche le implementazioni,
+e non più solo le dichiarazioni, per facilitare l'esecuzione del programma da terminale.
+
+
 I moduli saranno:
 
-- "LetturaDataset";
+- "LettoreDataset";
 - "CostruzioneGrafo";
 - "GestioneFrequenze";
 - "ComponentiConnesse";
@@ -73,25 +77,35 @@ I moduli saranno:
 - "RisoluzioneMinimax".
 
 Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
--"LetturaDataset":
-Ho implementato una prima versione. Il modulo legge un file di testo, 
-contenente cammini BGP rappresentati come sequenze di interi separati da spazi, e li
-traduce in vector di interi.
+-"main":
+  Al momento il main è stato usato per una piccola simulazione al fine di verificare
+  la funzionalità del modulo "LettoreDataset".
 
-Esempio di riga del dataset: 1 2 5
-Rappresenta il cammino: 1 -> 2 -> 5
-Viene tradotta in: [1,2,5]
+  Il main
+  -grazie all'include riesce a vedere il modulo LettoreDataset;
+  -prende in input "datasetprova.txt" dalla cartella FileInput;
+  -legge il dataset grazie alla funzione implementata in LettoreDataset.hpp;
+  -stampa il risultato ottenuto, ossia i cammini presenti in datasetprova.txt.
 
-Il modulo:
+-"LettoreDataset":
+  Ho implementato una prima versione. Il modulo legge un file di testo, 
+  contenente cammini BGP rappresentati come sequenze di interi separati da spazi, e li
+  traduce in vector di interi.
 
--apre il file;
--legge una riga alla volta;
--estrae i numeri presenti nella riga;
--aggiunge ogni numero al vector del cammino corrente;
--terminati i numeri della riga, salva il cammino dentro il vector di vector cammini;
+  Esempio di riga del dataset: 1 2 5
+  Rappresenta il cammino: 1 -> 2 -> 5
+  Viene tradotta in: [1,2,5]
 
-Strutture dati utilizzate:
--vector<int> per un singolo cammino;
--vector<vector<int>> per l'insieme di tutti i cammini.
+  Il modulo:
 
-La complessità è chiaramente lineare col numero di cammini nel file in input.
+  -apre il file;
+  -legge una riga alla volta;
+  -estrae i numeri presenti nella riga;
+  -aggiunge ogni numero al vector del cammino corrente;
+  -terminati i numeri della riga, salva il cammino dentro il vector di vector cammini.
+
+  Strutture dati utilizzate:
+  -vector<int> per un singolo cammino;
+  -vector<vector<int>> per l'insieme di tutti i cammini.
+
+  La complessità è chiaramente lineare col numero di cammini nel file in input.
