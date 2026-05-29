@@ -71,3 +71,27 @@ I moduli saranno:
 - "ControlloDSU";
 - "CostruzioneMST";
 - "RisoluzioneMinimax".
+
+Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
+-"LetturaDataset":
+Ho implementato una prima versione. Il modulo legge un file di testo, 
+contenente cammini BGP rappresentati come sequenze di interi separati da spazi, e li
+traduce in vector di interi.
+
+Esempio di riga del dataset: 1 2 5
+Rappresenta il cammino: 1 -> 2 -> 5
+Viene tradotta in: [1,2,5]
+
+Il modulo:
+
+-apre il file;
+-legge una riga alla volta;
+-estrae i numeri presenti nella riga;
+-aggiunge ogni numero al vector del cammino corrente;
+-terminati i numeri della riga, salva il cammino dentro il vector di vector cammini;
+
+Strutture dati utilizzate:
+-vector<int> per un singolo cammino;
+-vector<vector<int>> per l'insieme di tutti i cammini.
+
+La complessità è chiaramente lineare col numero di cammini nel file in input.
