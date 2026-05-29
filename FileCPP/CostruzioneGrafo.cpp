@@ -1,8 +1,6 @@
-#ifndef COSTRUZIONEGRAFO_HPP
-#define COSTRUZIONEGRAFO_HPP
-
 #include <iostream>
 #include <vector>
+
 #include "LettoreDataset.hpp"
 
 using namespace std;
@@ -108,5 +106,3 @@ void stampaGrafo() {
         }
     }
 }
-
-#endif
