@@ -76,16 +76,25 @@ I moduli saranno:
 - "CostruzioneMST";
 - "RisoluzioneMinimax".
 
+
+
+
+
+
+
 Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
+
 -"main":
   Al momento il main è stato usato per una piccola simulazione al fine di verificare
   la funzionalità del modulo "LettoreDataset".
 
-  Il main
+  Il main:
   -grazie all'include riesce a vedere il modulo LettoreDataset;
   -prende in input "datasetprova.txt" dalla cartella FileInput;
   -legge il dataset grazie alla funzione implementata in LettoreDataset.hpp;
   -stampa il risultato ottenuto, ossia i cammini presenti in datasetprova.txt.
+
+
 
 -"LettoreDataset":
   Ho implementato una prima versione. Il modulo legge un file di testo, 
@@ -109,3 +118,16 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   -vector<vector<int>> per l'insieme di tutti i cammini.
 
   La complessità è chiaramente lineare col numero di cammini nel file in input.
+
+
+
+-"CostruzioneGrafo":
+  L'idea iniziale è che CostruzioneGrafo deve avere delle 
+  funzioni che gli permettano di fare due cose:
+
+  -Deve prendere ogni cammino letto dal dataset e traformarlo in archi;
+    Un cammino [a,b,c,d] verrà trasformato negli archi (a,b),(b,c),(c,d).
+  -Deve trasformare questi archi in un grafo, rappresentato tramite liste di adiacenza;
+    Dato che il grafo è non orientato bisogna prestare attenzione alle ripetizioni.
+
+  Si parte sempre con dataset e valore dei nodi piccoli in modo da fare facilmente test.
