@@ -152,3 +152,16 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
        quindi la ricerca può richiedere tempo O(N);
      Poiché tale operazione viene effettuata per ciascun arco,
      la complessità totale della costruzione del grafo risulta O(M * N).
+
+
+
+
+-"GestioneFrequenze"
+  GestioneFrequenze dovrà restituirmi degli archi pesati, in cui il peso rappresenta la frequenza con cui 
+  un arco (a,b)=(b,a) appare all'interno di "archi", il vector che già contiene tutti gli archi.
+
+  Per farlo penso di pregettare una struct apposita "ArcoPesato" per poi rappresentare infine
+  tutti gli archi pesati in vector<Arcopesato> archipesati.
+
+  L'idea di base è scorrere tutti gli archi, per ogni arco (a,b) verifico se (a,b) o (b,a) sono già presenti 
+  in archipesati, se si, aumento il peso di 1, altrimenti ci aggiungo quell'arco con peso 1. 
