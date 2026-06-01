@@ -1,6 +1,7 @@
 #include <iostream>
 #include "../FileHPP/LettoreDataset.hpp"
 #include "../FileHPP/CostruzioneGrafo.hpp"
+#include "../FileHPP/GestioneFrequenze.hpp"
 
 using namespace std;
 
@@ -42,7 +43,14 @@ int main()
 
     //fin qui prova di CostruzioneGrafo
 
+    cout << endl;
+    cout << "Archi pesati:" << endl;
+    cout << endl;
 
+    costruisciarchipesati();
+
+    stampaarchipesati();
+    //fin qui prova di GestioneFrequenze
 
     return 0;
 }
