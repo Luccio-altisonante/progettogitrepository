@@ -87,14 +87,15 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
 
 -"main":
   Al momento il main è stato usato per una piccola simulazione al fine di verificare
-  la funzionalità dei moduli "LettoreDataset" e "CostruzioneGrafo".
+  la funzionalità dei moduli "LettoreDataset","CostruzioneGrafo" e "GestioneFrequenze".
 
   Il main:
   -grazie all'include riesce a vedere i vari moduli;
   -prende in input "datasetprova.txt" dalla cartella FileInput;
   -legge il dataset grazie alla funzione implementata in LettoreDataset.hpp;
   -stampa il risultato ottenuto, ossia i cammini presenti in datasetprova.txt;
-  -costruisce e stampa gli archi e il grafo grazie alle funzioni implementate in CostruzioneGrafo.hpp.
+  -costruisce e stampa gli archi e il grafo grazie alle funzioni implementate in CostruzioneGrafo.hpp;
+  -costruisce e stampa gli archi pesati grazie alle funzioni implementate in GestioneFrequenze.hpp.
 
 
 
@@ -107,7 +108,7 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   Rappresenta il cammino: 1 -> 2 -> 5
   Viene tradotta in: [1,2,5]
 
-  Il modulo:
+  IL MODULO:
 
   -apre il file;
   -legge una riga alla volta;
@@ -115,17 +116,22 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   -aggiunge ogni numero al vector del cammino corrente;
   -terminati i numeri della riga, salva il cammino dentro il vector di vector cammini.
 
-  Strutture dati utilizzate:
+  SRUTTURE DATI UTILIZZATE:
   -vector<int> per un singolo cammino;
   -vector<vector<int>> per l'insieme di tutti i cammini.
 
+  
+  COMPLESSITÀ:
   La complessità è chiaramente lineare col numero di cammini nel file in input.
 
 
 
+
 -"CostruzioneGrafo":
-  Nella sua prima versione, CostruzioneGrafo ha delle funzioni che, oltre a stampare,
-  gli permettono di fare principalmente due cose:
+  Nella sua prima versione, 
+  
+  IL MODULO:
+  CostruzioneGrafo ha delle funzioni che, oltre a stampare, gli permettono di fare principalmente due cose:
 
   -Prende ogni cammino letto dal dataset e lo traforma in archi("costruisciArchi");
     Un cammino [a,b,c,d] verrà trasformato negli archi (a,b),(b,c),(c,d);
@@ -135,13 +141,13 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
     Successivamente viene stampato il grafo con "stampaGrafo".
 
 
-  Strutture dati utilizzate:
+  STRUTTURE DATI UTILIZZATE:
   -vector<pair<int,int>> per memorizzare gli archi del grafo;
   -vector<vector> per rappresentare il grafo tramite liste di adiacenza.
 
-  Complessità:
+  COMPLESSITÀ:
   Se N è il numero di nodi del grafo, e M è il numero totale degli archi
-   (notare che per un cammino lungo d ci sono M-1 archi)
+  (notare che per un cammino lungo d ci sono M-1 archi)
   allora:
 
   -La funzione "costruisciArchi" scorre tutti i cammini e costruisce gli archi corrispondenti;
@@ -156,12 +162,33 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
 
 
 
--"GestioneFrequenze"
-  GestioneFrequenze dovrà restituirmi degli archi pesati, in cui il peso rappresenta la frequenza con cui 
-  un arco (a,b)=(b,a) appare all'interno di "archi", il vector che già contiene tutti gli archi.
+-"GestioneFrequenze":
+  Ho implementato una prima versione del modulo. Il suo ruolo è determinare quante volte 
+  ciascun arco compare all'interno dei cammini del dataset.
+  Tali frequenze verranno successivamente utilizzate come pesi degli archi del grafo.
 
-  Per farlo penso di pregettare una struct apposita "ArcoPesato" per poi rappresentare infine
-  tutti gli archi pesati in vector<Arcopesato> archipesati.
+  Esempio con archi:{(1,2),(2,5),(1,2),(2,7),(2,1)}
+  Gli archi pesati risultano:{(1,2) peso 3,(2,5) peso 1,(2,7) peso 1}
 
-  L'idea di base è scorrere tutti gli archi, per ogni arco (a,b) verifico se (a,b) o (b,a) sono già presenti 
-  in archipesati, se si, aumento il peso di 1, altrimenti ci aggiungo quell'arco con peso 1. 
+  IL MODULO:
+
+  -scorre tutti gli archi presenti nel vector archi;
+  -controlla se l'arco è già presente tra gli archi pesati e nel caso in che posizione;
+  -se presente aumenta di 1 il peso dell'arco pesato che si trova in quella posizione;
+  -se non presente crea un nuovo arco pesato con peso 1 e lo aggiunge ad archipesati.
+
+
+  STRUTTURE DATI UTILIZZATE:
+
+  -struct ArcoPesato, contenente:{int nodo1;int nodo2;int peso} per rappresentare un arco pesato;
+  -vector<ArcoPesato> per rappresentare tutti gli archi con il relativo peso.
+
+
+
+  COMPLESSITÀ:
+  Se M è il numero totale di archi presenti nel vector archi, allora:
+
+  Per ogni arco viene effettuata una ricerca nel vector archipesati. Nel caso peggiore 
+  ogni nuovo arco risulta diverso dai precedenti, quindi il numero totale di confronti risulterebbe:
+  
+  0 + 1 + 2 + 3 + ... + M = M(M+1)/2, Pertanto la complessità del modulo risulta O(M²).
