@@ -9,6 +9,7 @@ L'obiettivo del progetto è la costruzione e l'analisi di un grafo pesato, costr
 da dati BGP relativi agli Autonomous Systems (AS) di Internet.
 Lo scopo finale è progettare degli algoritmi che permettano, dati due nodi u e v,
 di trovare il costo del cammino minimax ottimo da u a v.
+Il costo di un cammino è definito come il massimo peso di un arco lungo quel cammino.
 
 
 Nel grafo:
