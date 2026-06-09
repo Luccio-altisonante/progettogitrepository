@@ -192,3 +192,48 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   ogni nuovo arco risulta diverso dai precedenti, quindi il numero totale di confronti risulterebbe:
   
   0 + 1 + 2 + 3 + ... + M = M(M+1)/2, Pertanto la complessità del modulo risulta O(M²).
+
+
+
+-"ComponentiConnesse":
+
+  Ho implementato una prima versione del modulo. Il suo ruolo è individuare
+  le componenti connesse del grafo costruito nei moduli precedenti.
+
+
+  Esempio:
+
+  Grafo:
+  1-2-3
+  4-5
+  6-7-8
+
+  Le componenti connesse risultano:
+
+  {1,2,3}
+  {4,5}
+  {6,7,8}
+
+  IL MODULO:
+
+  -scorre tutti i nodi del grafo;
+  -quando incontra un nodo non ancora visitato e che abbia almeno 1 vicino, avvia una visita DFS;
+  -durante la DFS vengono raggiunti tutti i nodi appartenenti alla stessa componente, con chiamate ricorsive;
+  -i nodi trovati vengono salvati in un vector temporaneo;
+  -terminata la DFS, il vector viene aggiunto al vector contenente tutte le componenti.
+
+  STRUTTURE DATI UTILIZZATE:
+
+  -vector<bool> visitato, che memorizza se un nodo è già stato visitato;
+  -vector<int> per memorizzare una singola componente connessa;
+  -vector<vector<int>> per memorizzare tutte le componenti del grafo.
+
+  COMPLESSITÀ:
+
+  Se N è il numero di nodi del grafo e M è il numero degli archi, allora:
+
+  -ogni nodo viene visitato una sola volta;
+  -ogni arco viene esplorato una sola volta durante la DFS.
+
+  Quindi la complessità del modulo risulta O(N + M).
+
