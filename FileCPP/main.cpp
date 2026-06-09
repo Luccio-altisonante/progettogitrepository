@@ -2,6 +2,7 @@
 #include "../FileHPP/LettoreDataset.hpp"
 #include "../FileHPP/CostruzioneGrafo.hpp"
 #include "../FileHPP/GestioneFrequenze.hpp"
+#include "../FileHPP/ComponentiConnesse.hpp"
 
 using namespace std;
 
@@ -51,6 +52,15 @@ int main()
 
     stampaarchipesati();
     //fin qui prova di GestioneFrequenze
+
+    cout << endl;
+    cout << "Componenti connesse:" << endl;
+    cout << endl;
+
+    costruisciComponenti();
+
+    stampaComponenti();
+    //fin qui prova di ComponentiConnesse
 
     return 0;
 }
