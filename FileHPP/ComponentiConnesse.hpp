@@ -21,8 +21,10 @@ vector<int> componentemaggiore;
 void nuovaDFS(int nodo, vector<int> &componentecorrente)
 {
     visitato[nodo] = true;
+    //timbra il nodo come già visitato, in modo da non considerarlo più
 
     componentecorrente.push_back(nodo);
+    //aggiungo il nodo alla componente corrente
 
     for (int i = 0; i < grafoadj[nodo].size(); i++)
     {
@@ -32,8 +34,13 @@ void nuovaDFS(int nodo, vector<int> &componentecorrente)
         {
             nuovaDFS(vicino, componentecorrente);
         }
+        //per ogni vicino del nodo guardo se è già stato visitato, se si non faccio niente e vado avanti,
+        //altrimenti ripeto il procedimento di inserimento e verifica vicini con questo nodo vicino
+
     }
 }
+
+
 
 void costruisciComponenti()
 {
@@ -41,11 +48,17 @@ void costruisciComponenti()
     {
         if (grafoadj[i].size() > 0 && visitato[i] == false)
         {
+            //per ora la prima condizione è messa solo perché ho definito arbitrariamente un vettore
+            //lungo 100, quindi ci potrebbero essere delle posizioni di questo vettore vuote, cioè
+            //che non rappresentano nessun elemento del grafo, che hanno 0 vicini, e non voglio considerarle
             vector<int> componentecorrente;
 
             nuovaDFS(i, componentecorrente);
+            //avvio la DFS dall'elemento i, se è già stato visitato passerà a uno dei suoi vicini
+            //la DFS finisce quando trovo tutta la componente connessa
 
             componenti.push_back(componentecorrente);
+            //aggiungo la componente al vettore di tutte le componenti
         }
     }
 }
