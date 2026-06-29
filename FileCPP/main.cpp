@@ -3,6 +3,7 @@
 #include "../FileHPP/CostruzioneGrafo.hpp"
 #include "../FileHPP/GestioneFrequenze.hpp"
 #include "../FileHPP/ComponentiConnesse.hpp"
+#include "../FileHPP/ControlloDSU.hpp"
 
 using namespace std;
 
@@ -59,12 +60,29 @@ int main()
 
     trovaComponenteMaggiore();
 
+    
     cout << endl;
-    cout << "Componente connessa maggiore:" << endl;
-    cout << endl;
-
     stampaComponenteMaggiore();
+    cout << endl;
     //fin qui prova di ComponentiConnesse
+
+
+
+
+    cout << "Iniziale struttura DSU della componente maggiore: " << endl;
+
+    inizializzaDSU();
+    stampaDSU();
+    
+
+    for (int i=0; i < componentemaggiore.size() - 1; i++) 
+    {
+        unisci(componentemaggiore[i],componentemaggiore[i+1]);
+        cout << endl << "Struttura DSU della componente maggiore dopo " << i+1 << " unioni:" << endl;
+        stampaDSU();
+
+    }
+    //fin qui prova di ControlloDSU
 
     return 0;
 }
