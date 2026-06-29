@@ -15,7 +15,8 @@ vector<bool> visitato(100, false);
 vector<vector<int>> componenti;
 //ogni elemento di componenti è una componente connessa
 
-
+vector<int> componentemaggiore;
+//conterrà i nodi della componente connessa più grande
 
 void nuovaDFS(int nodo, vector<int> &componentecorrente)
 {
@@ -62,6 +63,38 @@ void stampaComponenti()
 
         cout << endl;
     }
+}
+
+
+
+
+
+void trovaComponenteMaggiore()
+{
+
+    int indice = 0;
+
+    for (int i = 1; i < componenti.size(); i++)
+    {
+        if (componenti[i].size() > componenti[indice].size())
+        {
+            indice = i;
+        }
+    }
+
+    componentemaggiore = componenti[indice];
+}
+
+void stampaComponenteMaggiore()
+{
+    cout << "Componente connessa maggiore:" << endl;
+
+    for (int i = 0; i < componentemaggiore.size(); i++)
+    {
+        cout << componentemaggiore[i] << " ";
+    }
+
+    cout << endl;
 }
 
 #endif
