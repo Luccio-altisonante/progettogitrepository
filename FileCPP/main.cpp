@@ -53,13 +53,17 @@ int main()
     stampaarchipesati();
     //fin qui prova di GestioneFrequenze
 
-    cout << endl;
-    cout << "Componenti connesse:" << endl;
-    cout << endl;
+    
 
     costruisciComponenti();
 
-    stampaComponenti();
+    trovaComponenteMaggiore();
+
+    cout << endl;
+    cout << "Componente connessa maggiore:" << endl;
+    cout << endl;
+
+    stampaComponenteMaggiore();
     //fin qui prova di ComponentiConnesse
 
     return 0;
