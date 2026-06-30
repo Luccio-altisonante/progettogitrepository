@@ -87,7 +87,8 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
 
 -"main":
   Al momento il main è stato usato per una piccola simulazione al fine di verificare
-  la funzionalità dei moduli "LettoreDataset","CostruzioneGrafo" e "GestioneFrequenze".
+  la funzionalità dei moduli "LettoreDataset","CostruzioneGrafo","GestioneFrequenze", "ComponentiConnesse"
+  e "ControlloDSU".
 
   Il main:
   -grazie all'include riesce a vedere i vari moduli;
@@ -95,7 +96,9 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   -legge il dataset grazie alla funzione implementata in LettoreDataset.hpp;
   -stampa il risultato ottenuto, ossia i cammini presenti in datasetprova.txt;
   -costruisce e stampa gli archi e il grafo grazie alle funzioni implementate in CostruzioneGrafo.hpp;
-  -costruisce e stampa gli archi pesati grazie alle funzioni implementate in GestioneFrequenze.hpp.
+  -costruisce e stampa gli archi pesati grazie alle funzioni implementate in GestioneFrequenze.hpp;
+  -trova la componente connessa maggiore grazie alle funzioni implementate in ComponentiConnesse.hpp;
+  -simula delle operazioni sui nodi e verifica che la DSU ne tenga traccia con le funzioni implementate in ControlloDSU.hpp.
 
 
 
@@ -104,9 +107,13 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   contenente cammini BGP rappresentati come sequenze di interi separati da spazi, e li
   traduce in vector di interi.
 
-  Esempio di riga del dataset: 1 2 5
+
+  ESEMPIO:
+
+  Riga del dataset: 1 2 5
   Rappresenta il cammino: 1 -> 2 -> 5
   Viene tradotta in: [1,2,5]
+
 
   IL MODULO:
 
@@ -116,12 +123,15 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   -aggiunge ogni numero al vector del cammino corrente;
   -terminati i numeri della riga, salva il cammino dentro il vector di vector cammini.
 
+
   SRUTTURE DATI UTILIZZATE:
+
   -vector<int> per un singolo cammino;
   -vector<vector<int>> per l'insieme di tutti i cammini.
 
   
   COMPLESSITÀ:
+
   La complessità è chiaramente lineare col numero di cammini nel file in input.
 
 
@@ -130,7 +140,9 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
 -"CostruzioneGrafo":
   Nella sua prima versione, 
   
+
   IL MODULO:
+
   CostruzioneGrafo ha delle funzioni che, oltre a stampare, gli permettono di fare principalmente due cose:
 
   -Prende ogni cammino letto dal dataset e lo traforma in archi("costruisciArchi");
@@ -142,10 +154,13 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
 
 
   STRUTTURE DATI UTILIZZATE:
+
   -vector<pair<int,int>> per memorizzare gli archi del grafo;
   -vector<vector> per rappresentare il grafo tramite liste di adiacenza.
 
+
   COMPLESSITÀ:
+
   Se N è il numero di nodi del grafo, e M è il numero totale degli archi
   (notare che per un cammino lungo d ci sono M-1 archi)
   allora:
@@ -167,8 +182,12 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   ciascun arco compare all'interno dei cammini del dataset.
   Tali frequenze verranno successivamente utilizzate come pesi degli archi del grafo.
 
-  Esempio con archi:{(1,2),(2,5),(1,2),(2,7),(2,1)}
+
+  ESEMPIO:
+
+  con archi:{(1,2),(2,5),(1,2),(2,7),(2,1)}
   Gli archi pesati risultano:{(1,2) peso 3,(2,5) peso 1,(2,7) peso 1}
+
 
   IL MODULO:
 
@@ -184,8 +203,8 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   -vector<ArcoPesato> per rappresentare tutti gli archi con il relativo peso.
 
 
-
   COMPLESSITÀ:
+
   Se M è il numero totale di archi presenti nel vector archi, allora:
 
   Per ogni arco viene effettuata una ricerca nel vector archipesati. Nel caso peggiore 
@@ -201,7 +220,7 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   le componenti connesse del grafo costruito nei moduli precedenti.
 
 
-  Esempio:
+  ESEMPIO:
 
   Grafo:
   1-2-3
@@ -214,6 +233,7 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   {4,5}
   {6,7,8}
 
+
   IL MODULO:
 
   -scorre tutti i nodi del grafo;
@@ -222,11 +242,13 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   -i nodi trovati vengono salvati in un vector temporaneo;
   -terminata la DFS, il vector viene aggiunto al vector contenente tutte le componenti.
 
+
   STRUTTURE DATI UTILIZZATE:
 
   -vector<bool> visitato, che memorizza se un nodo è già stato visitato;
   -vector<int> per memorizzare una singola componente connessa;
   -vector<vector<int>> per memorizzare tutte le componenti del grafo.
+
 
   COMPLESSITÀ:
 
@@ -237,3 +259,100 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
 
   Quindi la complessità del modulo risulta O(N + M).
 
+
+
+
+-"ControlloDSU":
+  
+  Ho implementato una prima versione del modulo. Questo modulo svolge esclusivamente un ruolo di appoggio
+  e aiuto al modulo successivo, "CostruzioneMST". Infatti, dopo aver trovato la componente connessa maggiore,
+  si vorrebbe costruire il Minimum Spanning Tree con gli archi pesati già trovati, ed è qui che sorge il problema
+  che questo modulo è adibito a risolvere: 
+  sapere se i due estremi dell'arco appartengano già allo stesso insieme di nodi dell'albero costruito 
+  fino a questo momento. Questa informazione è importante perché se la risposta è negativa, posso tranquillamente
+  inserire l'arco nel MST, e aggiornare la DSU unendo i due insiemi distinti, ma se la risposta è positiva 
+  significa che non posso aggiungere l'arco perché altrimenti si formerebbe un ciclo.
+  
+
+  NEL MODULO:
+
+  Ci saranno vari insiemi di nodi, per ognuno memorizzo il proprio "padre", 
+  cioè il suo nodo di riferimento, e nel caso in cui il padre di un nodo sia il nodo stesso, 
+  allora quello si chiamerà "rappresentante" di quell'insieme di nodi.
+  Quando si vuole aggiungere, nella costruzione dell'MST, un arco (a,b), 
+  il modulo verifica che a e b appartengano a due insiemi disgiunti, 
+  se è così unisce i due insiemi,
+  sostituendo il campo "padre" del rappresentante di b con il rappresentante dell'insieme a cui appartiene a.  
+  
+
+  ESEMPIO:
+
+  Immaginando che la componente connessa maggiore sia {1,2,3,4} 
+  Inizialmente ogni nodo è un insieme disgiunto, quindi avrà sè stesso come rappresentante (quindi come padre),
+  cioè inizialmente:
+    Nodo: 1, Padre: 1
+    Nodo: 2, Padre: 2
+    Nodo: 3, Padre: 3
+    Nodo: 4, Padre: 4
+  poi, immaginando di voler aggiungere l'arco (1,2):
+    Nodo: 1, Padre: 1
+    Nodo: 2, Padre: 1
+    Nodo: 3, Padre: 3
+    Nodo: 4, Padre: 4
+  infatti adesso 2 fa parte dello stesso insieme di 1, e avrà dunque lo stesso rappresentante.
+  Immaginando ora di aggiungere l'arco (2,3):
+    Nodo: 1, Padre: 1
+    Nodo: 2, Padre: 1
+    Nodo: 3, Padre: 1
+    Nodo: 4, Padre: 4
+  Se adesso si volesse aggiungere l'arco (1,3) il modulo osserverebbe che entrambi i nodi hanno
+  lo stesso rappresentante, perciò non può unire i due insiemi (in quanto è un unico insieme),
+  e ciò di conseguenza, nel modulo successivo, impedirà di aggiungere l'arco al MST, evitando cicli. 
+ 
+
+  IL MODULO:
+   
+  ha varie funzioni:
+  -(1)void inizializzaDSU: inizializza la DSU prendendo ogni nodo semplice della componente connessa maggiore,
+   traformandolo in un NodoDSU, cioè un nodo con padre, dove il padre è il nodo stesso,
+   e aggiungendo questo nodo al vector contenente tutti i nodi, nodiDSU.
+  -(2)int trovaPosizioneNodo: il nodo i non sarà per forza nella posizione i (o i-1) del vettore nodiDSU,
+   potrebbe essere ovunque, e dato che serve sapere la posizione per le successive operazioni, 
+   uso una funzione che la trovi. Questa funzione prende in input un nodo, scorre sull'indice i 
+   tutto il vector nodiDSU e restituisce il valore di i per cui vale nodiDSU[i].nodo == nodoininput.
+  -(3)int trovaRappresentante: questa funzione ricorsiva prende in input un nodo e guarda il suo padre:
+   se è il nodo stesso, allora, per definizione, è il rappresentante, e lo restituisce, altrimenti
+   richiama la funzione sul padre di quel nodo. Andando avanti così, per le proprietà di costruzione,
+   si arriverà sempre a trovare un rappresentante.
+  -(4)void unisci: prende in input due nodi e ne trova i rispettivi rappresentanti con la funzione precedente.
+   Se i rappresentanti sono uguali non fa niente, altrimenti sostituisce il campo "padre" del rappresentante
+   del secondo elemento con il rappresentante del primo elemento. Si cambia il padre di rappresentante2 
+   e non di nodo2 perché così tutti gli elementi che avevano come rappresentante rappresentante2, 
+   quindi che appartenevano al secondo insieme, adesso avranno rappresentante1 come rappresentante,
+   e faranno tutti parte del primo insieme. Altrimenti solo nodo2 ed i suoi figli si sarebbero spostati 
+   nel primo insieme,
+   lasciando tutti gli altri nodi del secondo insieme lì dentro (anche se questo non deve esistere più).
+  -(5)void stampaDSU: stampa i nodi ed i rispettivi padri al momento della chiamata.
+
+
+  STRUTTURE DATI UTILIZZATE:
+
+  -struct NodoDSU, contenente {int nodo, int padre}, per rappresentare un nodo col suo padre associato;
+  -vector<NodoDSU>, per memorizzare tutti i nodi con padre associato.
+
+
+  COMPLESSITÀ:
+
+  Se N è il numero di nodi della componente connesse maggiore, allora:
+
+  -la funzione (1) visita tutti i nodi una sola volta e compie numero costante di operazioni per iterazione,
+   dunque avrà complessità O(N);
+  -la funzione (2) effettua una scansione lineare del vettore nodiDSU. Nel caso peggiore il nodo cercato 
+   si trova alla fine o non c'è, quindi deve scorrere tutto il vettore, perciò avrà complessità O(N);
+  -la funzione (3) risale ricorsivamente la catena dei padri. Ad ogni chiamata ricorsiva viene però chiamata 
+   anche la funzione (2), la quale costa O(N). Nel caso peggiore il nodo da cui partiamo è in fondo alla
+   catena dei padri, e questa potrebbe contenere N nodi. Perciò la complessità sarà O(N)*O(N)=O(N^2);
+  -la funzione (4) esegue due volte la funzione (3) e al massimo una volta la funzione (2).
+   Ne segue che la complessità sarà 2*O(N^2)+O(N)=O(N^2).
+
+  Dunque sommando tutti i contributi, il modulo avrà complessità O(N^2).
