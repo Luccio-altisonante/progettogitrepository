@@ -96,7 +96,7 @@ void unisci(int nodo1, int nodo2)
         // come rappresentante rappresentante2, quindi che appartenevano al secondo insieme, adesso avranno
         // rappresentante1 come rappresentante, e faranno tutti parte del primo insieme.
         // altrimenti solo nodo2 ed i suoi figli si sarebbero spostati nel primo insieme,
-        // lasciando tutti gli altri nodi dell secondo insieme lì dentro (anche se questo non deve esistere più)
+        // lasciando tutti gli altri nodi del secondo insieme lì dentro (anche se questo non deve esistere più)
     }
 }
 
