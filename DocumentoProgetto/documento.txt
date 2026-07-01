@@ -87,8 +87,8 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
 
 -"main":
   Al momento il main è stato usato per una piccola simulazione al fine di verificare
-  la funzionalità dei moduli "LettoreDataset","CostruzioneGrafo","GestioneFrequenze", "ComponentiConnesse"
-  e "ControlloDSU".
+  la funzionalità dei moduli "LettoreDataset","CostruzioneGrafo","GestioneFrequenze", "ComponentiConnesse",
+  "ControlloDSU" e un primo pezzo di "CostruzioneMST".
 
   Il main:
   -grazie all'include riesce a vedere i vari moduli;
@@ -98,7 +98,8 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   -costruisce e stampa gli archi e il grafo grazie alle funzioni implementate in CostruzioneGrafo.hpp;
   -costruisce e stampa gli archi pesati grazie alle funzioni implementate in GestioneFrequenze.hpp;
   -trova la componente connessa maggiore grazie alle funzioni implementate in ComponentiConnesse.hpp;
-  -simula delle operazioni sui nodi e verifica che la DSU ne tenga traccia con le funzioni implementate in ControlloDSU.hpp.
+  -simula delle operazioni sui nodi e verifica che la DSU ne tenga traccia con le funzioni implementate in ControlloDSU.hpp;
+  -seleziona e stampa gli archi della CCM grazie alle funzioni implementate in CostruzioneMST.hpp.
 
 
 
@@ -356,3 +357,54 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
    Ne segue che la complessità sarà 2*O(N^2)+O(N)=O(N^2).
 
   Dunque sommando tutti i contributi, il modulo avrà complessità O(N^2).
+
+
+
+
+-"CostruzioneMST":
+  Ho implementato una prima versione del primo pezzo del modulo. Dato che questo modulo si prospetta
+  essere più lungo dei precedenti, ho deciso di suddividere anche la prima implementazione in più sessioni,
+  perché ho stimato che non sarei riuscito a finirlo in una sola come è stato per i moduli precedenti.
+  
+  Questo modulo deve:
+
+  -prendere tutti gli archi pesati e selezionare solo quelli appartenenti alla componente connessa maggiore;
+  -ordinarli tutti in ordine crescente (perché questo servirà a facilitare la costruzione del MST);
+  -per ordinarli, fra i vari algoritmi di sorting visti a lezione, ho penso di utilizzare il mergesort, 
+   che grazie alla sua complessità O(nlogn) è molto usato per gestire strutture dati molto grandi come
+   i dataset CAIDA di questo progetto;
+  -selezionare, attraverso il controllo DSU, quali archi può usare per la costruzione del MST;
+  -una volta costruito il MST, stampare i suoi archi per verifica.
+
+  Con questo primo pezzo che ho implementato,
+
+
+  IL MODULO:
+
+  -seleziona gli archi del vettore archipesati che appartengono alla componente connessa maggiore,
+   nella funzione "void selezionaArchiCCM"(2), grazie alla funzione ausiliaria "bool appartieneComponenteMaggiore"(1)
+   e li salva nel vettore archiCCM;
+  -stampa tutti gli archi pesati presenti in archiCCM per verifica.
+
+  
+  Si possono osservare quelle che finora sono le
+
+
+  STRUTTURE DATI UTILIZZATE:
+
+  -vector<ArcoPesato> per rappresentare tutti gli archi pesati appartenenti alla componente connessa maggiore.
+
+
+  Si possono fare già adesso delle analisi sulla
+
+
+  COMPLESSITÀ:
+
+  Se N è il numero di nodi della componente connessa maggiore, e M il numero di archi pesati, allora:
+
+  -la funzione (1) esegue una scansione lineare del vettore componente maggiore, perciò avrà complessità O(N);
+  -la funzione (2) esamina ciascuno degli M archi e per ognuno chiama la funzione (1), 
+   mentre l'altra operazione all'interno del for ha costo costante O(1).
+   Dunque la complessità di questa funzione sarà O(M)*O(N)=O(M*N).
+
+  Finora la complessità generale è O(M*N). 
