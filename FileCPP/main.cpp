@@ -4,6 +4,7 @@
 #include "../FileHPP/GestioneFrequenze.hpp"
 #include "../FileHPP/ComponentiConnesse.hpp"
 #include "../FileHPP/ControlloDSU.hpp"
+#include "../FileHPP/CostruzioneMST.hpp"
 
 using namespace std;
 
@@ -83,6 +84,19 @@ int main()
 
     }
     //fin qui prova di ControlloDSU
+
+
+
+
+
+    cout << endl;
+    cout << "Archi della componente connessa maggiore:" << endl;
+    cout << endl;
+
+    selezionaArchiCCM();
+
+    stampaArchiCCM();
+    //fin qui prova di primo pezzo di CostruzioneMST
 
     return 0;
 }
