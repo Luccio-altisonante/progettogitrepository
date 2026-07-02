@@ -96,6 +96,13 @@ int main()
     selezionaArchiCCM();
 
     stampaArchiCCM();
+
+    cout << endl;
+    cout << "Archi della componente connessa maggiore dopo l'ordinamento:" << endl;
+
+    ordinaArchiCCM();
+    stampaArchiCCM();
+
     //fin qui prova di primo pezzo di CostruzioneMST
 
     return 0;
