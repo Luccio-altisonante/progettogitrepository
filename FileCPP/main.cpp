@@ -99,9 +99,18 @@ int main()
 
     cout << endl;
     cout << "Archi della componente connessa maggiore dopo l'ordinamento:" << endl;
+    cout << endl;
 
     ordinaArchiCCM();
     stampaArchiCCM();
+
+    costruisciMST();
+
+    cout << endl;
+    cout << "Archi dell'MST:" << endl;
+    cout << endl;
+
+    stampaArchiMST();
 
     //fin qui prova di primo pezzo di CostruzioneMST
 
