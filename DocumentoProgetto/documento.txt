@@ -362,7 +362,7 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
 
 
 -"CostruzioneMST":
-  Ho implementato una prima versione del primo pezzo del modulo. Dato che questo modulo si prospetta
+  Ho implementato una prima versione dei primi due pezzi del modulo. Dato che questo modulo si prospetta
   essere più lungo dei precedenti, ho deciso di suddividere anche la prima implementazione in più sessioni,
   perché ho stimato che non sarei riuscito a finirlo in una sola come è stato per i moduli precedenti.
   
@@ -376,7 +376,7 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   -selezionare, attraverso il controllo DSU, quali archi può usare per la costruzione del MST;
   -una volta costruito il MST, stampare i suoi archi per verifica.
 
-  Con questo primo pezzo che ho implementato,
+  Con questi primi due pezzi che ho implementato,
 
 
   IL MODULO:
@@ -384,7 +384,13 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   -seleziona gli archi del vettore archipesati che appartengono alla componente connessa maggiore,
    nella funzione "void selezionaArchiCCM"(2), grazie alla funzione ausiliaria "bool appartieneComponenteMaggiore"(1)
    e li salva nel vettore archiCCM;
-  -stampa tutti gli archi pesati presenti in archiCCM per verifica.
+  -stampa tutti gli archi pesati presenti in archiCCM per verifica;
+  -ordina tutti gli archi di archiCCM in ordine crescente di peso, nella funzione "void ordinaArchiCCM"(3),
+   grazie alla funzione ausiliaria "MergeSort"(4);
+   (Dati i risultati già noti sul funzionamento e la complessità del mergesort, nell'analisi 
+    non considererò Fusione come funzione distinta ausiliaria di MergeSort, ma parlerò semplicemente
+    di "MergeSort" per indicare risultati di questa funzione composta)
+  -stampa tutti gli archi pesati in archiCCM dopo essere stati ordinati.
 
   
   Si possono osservare quelle che finora sono le
@@ -400,11 +406,30 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
 
   COMPLESSITÀ:
 
-  Se N è il numero di nodi della componente connessa maggiore, e M il numero di archi pesati, allora:
+  Se N è il numero di nodi della componente connessa maggiore, e M il numero di archi pesati, 
+  D il numero di archi pesati appartenenti alla componente connessa maggiore, allora:
 
   -la funzione (1) esegue una scansione lineare del vettore componente maggiore, perciò avrà complessità O(N);
   -la funzione (2) esamina ciascuno degli M archi e per ognuno chiama la funzione (1), 
    mentre l'altra operazione all'interno del for ha costo costante O(1).
    Dunque la complessità di questa funzione sarà O(M)*O(N)=O(M*N).
+  -la funzione (3) chiama il MergeSort(4) su un vettore di dimensione D, dunque per le proprietà note 
+   di (4), avrà complessità O(DlogD)
 
-  Finora la complessità generale è O(M*N). 
+  Finora la complessità generale è O(M*N)+O(DlogD). Si può dimostrare che la complessità generale è dominata 
+  dal primo termine, perciò risulterà O(M*N), di seguito la dimostrazione. Si ha come ipotesi D <= M, in quanto 
+  il numero di archi della componente connessa maggiore è sicuramente inferiore o uguale al numero di archi totali,
+  e M <= N*(N-1)/2, perché il numero massimo di archi che si possono avere dati N nodi è proprio quello, ottenuto 
+  ipotizzando che il primo nodo possa avere massimo N-1 archi, il secondo possa averne massimo altri N-2, 
+  perché ho già contato quello col primo, e così via. Contandoli si ottiene infatti la somma dei primi N-1 
+  numeri naturali che si può scrivere come (N-1)(N-1 + 1)/2 = N(N-1)/2. Dato che si fanno questi
+  ragionamenti per dataset di grandi dimensioni, si possono ipotizzare N,M,D che tendono a infinito, e dunque
+  tradurre le nostre ipotesi in D=O(M), M=O(N^2). Si vuole dimostrare che DlogD=O(M*N).
+  Si parte da DlogD, 
+  si sfrutta la proprietà per cui se una funzione f è O(N^k), allora il suo logaritmo logf sarà O(log(N^k)), 
+  che si può ricavare partendo dalla definizione di O grande, e qui si ha D=O(M) e M=O(N^2),
+  e se si combinano restituiscono anche D=O(M)=O(O(N^2))=O(N^2).
+  Si può così affermare che DlogD=O(M)*O(log(N^k)), che si può riscrivere come O(M)*O(k*logN), e dunque mettendo
+  insieme e sfruttando le proprietà dell'O grande, si ottiene DlogD=O(MlogN). Sapendo che logN=O(N), nelle ipotesi
+  date, allora DlogD=O(M*O(N)), che per le proprietà dlel'O grande si può riscrivere come O(M*N). Abbiamo così
+  ottenuto DlogD=(M*N), e dunque finora la complessità generale del modulo resta O(M*N) + O(DlogD) = O(M*N).
