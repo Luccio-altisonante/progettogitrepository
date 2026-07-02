@@ -22,6 +22,11 @@ vector<NodoDSU> nodiDSU;
 
 void inizializzaDSU()
 {
+    nodiDSU.clear();
+    //necessario perché se la funzione viene chiamata più volte
+    //(come adesso, prima nel main direttamente, poi il main chiama costruisciMST che chiama inizializzaDSU)
+    //non crea un vettore nuovo ma continua ad aggiungere gli elementi nuovi al vettore vecchio
+    
     for (int i = 0; i < componentemaggiore.size(); i++)
     {
         NodoDSU nuovonodoDSU;
