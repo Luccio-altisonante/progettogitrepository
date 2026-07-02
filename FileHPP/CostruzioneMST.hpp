@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 
+#include "ControlloDSU.hpp"
 #include "ComponentiConnesse.hpp"
 #include "GestioneFrequenze.hpp"
 
@@ -11,6 +12,9 @@ using namespace std;
 
 vector<ArcoPesato> archiCCM;
 //conterrà tutti gli archi appartenenti alla componente connessa maggiore
+
+vector<ArcoPesato> archiMST;
+//conterrà tutti gli archi di archiCCM che faranno parte del MST
 
 
 //questa funzione mi dice se un nodo appartiene alla componente connessa maggiore o meno
@@ -47,10 +51,6 @@ void selezionaArchiCCM()
 
 void stampaArchiCCM()
 {
-    cout << endl;
-    cout << "Archi appartenenti alla componente connessa maggiore:" << endl;
-    cout << endl;
-
     for (int i = 0; i < archiCCM.size(); i++)
     {
         cout << "(" << archiCCM[i].nodo1 << "," << archiCCM[i].nodo2; cout << ")";
@@ -132,5 +132,40 @@ void stampaArchiCCMordinati()
         cout << " con peso = " << archiCCM[i].peso << endl;
     }
 }
+
+
+
+void costruisciMST() 
+{
+    inizializzaDSU();
+
+    for (int i = 0; i < archiCCM.size(); i++)
+    {
+        int nodo1 = archiCCM[i].nodo1;
+        int nodo2 = archiCCM[i].nodo2;
+
+        int rappresentante1 = trovaRappresentante(nodo1);
+        int rappresentante2 = trovaRappresentante(nodo2);
+
+        if (rappresentante1 != rappresentante2)
+        {
+            archiMST.push_back(archiCCM[i]);
+
+            unisci(nodo1, nodo2);
+        }
+    }
+}
+
+
+void stampaArchiMST()
+{
+    for(int i = 0; i < archiMST.size(); i++)
+    {
+        cout << "(" << archiMST[i].nodo1 << ", " << archiMST[i].nodo2 << ")";
+        cout << " con peso = " << archiMST[i].peso << endl;
+    }
+}
+
+
 
 #endif
