@@ -362,27 +362,30 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
 
 
 -"CostruzioneMST":
-  Ho implementato una prima versione dei primi due pezzi del modulo. Dato che questo modulo si prospetta
-  essere più lungo dei precedenti, ho deciso di suddividere anche la prima implementazione in più sessioni,
-  perché ho stimato che non sarei riuscito a finirlo in una sola come è stato per i moduli precedenti.
-  
-  Questo modulo deve:
-
-  -prendere tutti gli archi pesati e selezionare solo quelli appartenenti alla componente connessa maggiore;
-  -ordinarli tutti in ordine crescente (perché questo servirà a facilitare la costruzione del MST);
-  -per ordinarli, fra i vari algoritmi di sorting visti a lezione, ho penso di utilizzare il mergesort, 
-   che grazie alla sua complessità O(nlogn) è molto usato per gestire strutture dati molto grandi come
-   i dataset CAIDA di questo progetto;
-  -selezionare, attraverso il controllo DSU, quali archi può usare per la costruzione del MST;
-  -una volta costruito il MST, stampare i suoi archi per verifica.
-
-  Con questi primi due pezzi che ho implementato,
+  Ho implementato una prima versione completa del modulo. Il suo ruolo è prendere tutti gli archi pesati,
+  selezionare solo quelli appartenenti alla componente connessa maggiore, ordinarli in ordine crescente di peso,
+  ed infine costuire il Minumum Spanning Tree (MST), grazie al controllo DSU precedentemente implementato.
+  Questo modulo ha la funzione di velocizzare di molto la ricerca del cammino con il costo minore, dove con 
+  "costo" si intende il massimo peso di un arco incontrato lungo il cammino. Senza questo modulo infatti, 
+  si sarebbero dovuti analizzare tutti i possibili cammini fra due nodi a e b, prima di poter individuare 
+  quello di costo minimo.
+  Adesso invece si può sfruttare una proprietà del MST, dopo averlo costruito, cioè che il cammino fra due 
+  nodi in un MST minimizza il valore del massimo peso di un arco attraversato.
+  Seguendo infatti l'algoritmo per la sua costruzione, cioè prima si ordinano gli archi in ordine crescente 
+  di peso, poi si aggiungono all'albero con il controllo DSU, si può dimostrare per assurdo questa sua proprietà.
+  Si consideri un MST e, per assurdo, un cammino C fra due nodi a e b il cui costo è minore di quello del cammino
+  C' fra a e b lungo l'MST. Allora questo vuol dire che almeno uno degli archi del cammino C è rimasto escluso dal 
+  controllo DSU, ciò significa che erano già stati inseriti nel MST degli archi che avevano formato un cammino 
+  C' da a a b. Ma dato che gli archi vengono presi in ordine crescente di peso, poiché erano già stati ordinati,
+  questo significa che tutti gli archi di C' hanno un peso minore o uguale degli archi di C esclusi.
+  Dunque il cammino C avrebbe almeno un arco di peso maggiore o uguale del peso di ogni singolo arco lungo il
+  cammino C', e perciò avrebbe costo maggiore, ecco l'assurdo.  
 
 
   IL MODULO:
 
   -seleziona gli archi del vettore archipesati che appartengono alla componente connessa maggiore,
-   nella funzione "void selezionaArchiCCM"(2), grazie alla funzione ausiliaria "bool appartieneComponenteMaggiore"(1)
+   nella funzione "void selezionaArchiCCM"(2), grazie alla funzione ausiliaria "bool appartieneComponenteMaggiore"(1),
    e li salva nel vettore archiCCM;
   -stampa tutti gli archi pesati presenti in archiCCM per verifica;
   -ordina tutti gli archi di archiCCM in ordine crescente di peso, nella funzione "void ordinaArchiCCM"(3),
@@ -391,17 +394,46 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
     non considererò Fusione come funzione distinta ausiliaria di MergeSort, ma parlerò semplicemente
     di "MergeSort" per indicare risultati di questa funzione composta)
   -stampa tutti gli archi pesati in archiCCM dopo essere stati ordinati.
+  -costruisce l'MST, nella funzione "void costruisciMST"(5), grazie alle funzioni ausiliarie 
+   "void inizializzaDSU"(6), "int trovaRappresentante"(7) e "void unisci"(8), del modulo ControlloDSU.
+  -stampa tutti gli archi del MST.
 
-  
-  Si possono osservare quelle che finora sono le
+
+ESEMPIO:
+
+Archi pesati della componente connessa maggiore:
+
+(2,3) peso 2
+(1,2) peso 1
+(3,4) peso 5
+(1,3) peso 4
+
+Dopo l’ordinamento, il modulo li esamina in questo ordine:
+
+(1,2) peso 1
+(2,3) peso 2
+(1,3) peso 4
+(3,4) peso 5
+
+A questo punto:
+
+-l’arco (1,2) viene inserito nel MST;
+-l’arco (2,3) viene inserito nel MST;
+-l’arco (1,3) non viene inserito, perché 1 e 3 risultano già collegati
+attraverso gli archi precedenti e aggiungerlo creerebbe un ciclo;
+-l’arco (3,4) viene inserito.
+
+Il MST finale sarà quindi formato dagli archi:
+
+(1,2), (2,3), (3,4)
 
 
   STRUTTURE DATI UTILIZZATE:
 
-  -vector<ArcoPesato> per rappresentare tutti gli archi pesati appartenenti alla componente connessa maggiore.
-
-
-  Si possono fare già adesso delle analisi sulla
+  -vector<ArcoPesato>,
+   per rappresentare tutti gli archi pesati appartenenti alla componente connessa maggiore e quelli del MST.
+  -la struttura DSU, implementata nel modulo "ControlloDSU", usata per mantenere dinamicamente l’informazione 
+   su quali nodi risultino già collegati dagli archi scelti fino a quel momento. 
 
 
   COMPLESSITÀ:
@@ -415,21 +447,34 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
    Dunque la complessità di questa funzione sarà O(M)*O(N)=O(M*N).
   -la funzione (3) chiama il MergeSort(4) su un vettore di dimensione D, dunque per le proprietà note 
    di (4), avrà complessità O(DlogD)
+  -la funzione (5) chiama 1 volta (6), poi, per ogni arco della componente connessa maggiore,chiama 2 volte (7) e 
+   1 volta (8). Dall'analisi già svolta nel modulo ControlloDSU, sappiamo che (6)=O(N), (7)=O(N^2), (8)=O(N^2),
+   dunque avrà complessità O(N) + D*(3*O(N^2))=O(D*N^2).
 
-  Finora la complessità generale è O(M*N)+O(DlogD). Si può dimostrare che la complessità generale è dominata 
-  dal primo termine, perciò risulterà O(M*N), di seguito la dimostrazione. Si ha come ipotesi D <= M, in quanto 
-  il numero di archi della componente connessa maggiore è sicuramente inferiore o uguale al numero di archi totali,
-  e M <= N*(N-1)/2, perché il numero massimo di archi che si possono avere dati N nodi è proprio quello, ottenuto 
-  ipotizzando che il primo nodo possa avere massimo N-1 archi, il secondo possa averne massimo altri N-2, 
-  perché ho già contato quello col primo, e così via. Contandoli si ottiene infatti la somma dei primi N-1 
-  numeri naturali che si può scrivere come (N-1)(N-1 + 1)/2 = N(N-1)/2. Dato che si fanno questi
-  ragionamenti per dataset di grandi dimensioni, si possono ipotizzare N,M,D che tendono a infinito, e dunque
-  tradurre le nostre ipotesi in D=O(M), M=O(N^2). Si vuole dimostrare che DlogD=O(M*N).
-  Si parte da DlogD, 
-  si sfrutta la proprietà per cui se una funzione f è O(N^k), allora il suo logaritmo logf sarà O(log(N^k)), 
-  che si può ricavare partendo dalla definizione di O grande, e qui si ha D=O(M) e M=O(N^2),
-  e se si combinano restituiscono anche D=O(M)=O(O(N^2))=O(N^2).
-  Si può così affermare che DlogD=O(M)*O(log(N^k)), che si può riscrivere come O(M)*O(k*logN), e dunque mettendo
-  insieme e sfruttando le proprietà dell'O grande, si ottiene DlogD=O(MlogN). Sapendo che logN=O(N), nelle ipotesi
-  date, allora DlogD=O(M*O(N)), che per le proprietà dlel'O grande si può riscrivere come O(M*N). Abbiamo così
-  ottenuto DlogD=(M*N), e dunque finora la complessità generale del modulo resta O(M*N) + O(DlogD) = O(M*N).
+  -La complessità generale delle prime 4 funzioni è O(M*N)+O(DlogD). Si può dimostrare che questa è dominata 
+   dal primo termine, perciò risulterà O(M*N), di seguito la dimostrazione. Si ha come ipotesi D <= M, in quanto 
+   il numero di archi della componente connessa maggiore è sicuramente inferiore o uguale al numero di archi totali,
+   e M <= N*(N-1)/2, perché il numero massimo di archi che si possono avere dati N nodi è proprio quello, ottenuto 
+   ipotizzando che il primo nodo possa avere massimo N-1 archi, il secondo possa averne massimo altri N-2, 
+   perché ho già contato quello col primo, e così via. Contandoli si ottiene infatti la somma dei primi N-1 
+   numeri naturali che si può scrivere come (N-1)(N-1 + 1)/2 = N(N-1)/2. Dato che si fanno questi
+   ragionamenti per dataset di grandi dimensioni, si possono ipotizzare N,M,D che tendono a infinito, e dunque
+   tradurre le nostre ipotesi in D=O(M), M=O(N^2). Si vuole dimostrare che DlogD=O(M*N).
+   Si parte da DlogD, 
+   si sfrutta la proprietà per cui se una funzione f è O(N^k), allora il suo logaritmo logf sarà O(log(N^k)), 
+   che si può ricavare partendo dalla definizione di O grande, e qui si ha D=O(M) e M=O(N^2),
+   e se si combinano restituiscono anche D=O(M)=O(O(N^2))=O(N^2).
+   Si può così affermare che DlogD=O(M)*O(log(N^k)), che si può riscrivere come O(M)*O(k*logN), e dunque mettendo
+   insieme e sfruttando le proprietà dell'O grande, si ottiene DlogD=O(MlogN). Sapendo che logN=O(N), nelle ipotesi
+   date, allora DlogD=O(M*O(N)), che per le proprietà dlel'O grande si può riscrivere come O(M*N). Abbiamo così
+   ottenuto DlogD=(M*N), e dunque la complessità generale delle prime 4 funzioni è O(M*N) + O(DlogD) = O(M*N).
+
+  -Una volta aggiunta la funzione (5), il modulo ha complessità O(M*N) + O(D*N^2). Senza ulteriori informazioni
+   su D,M o N, se non si vuole peggiorare la qualità della stima, non si può migliorare l'espressione per la
+   complessità generale del modulo. 
+   
+  Tuttavia, se si vuole eliminare la dipendenza da D e avere un'espressione un
+  po' più generale, sfruttando le relazioni precedentemente elencate e perdendo della precisione nella stima, 
+  si può affermare che la complessità diventa O(M*N) + O(O(M)*N^2)=O(M*N^2).
+  Si potrebbe arrivare ad eliminare la dipendenza anche da M, lasciando solo quella da N, sebbene a questo punto
+  la stima sia imprecisa e grossolana, ed arrivare alla versione O(O(N^2)*N^2)=O(N^4).
