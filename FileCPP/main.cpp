@@ -5,6 +5,7 @@
 #include "../FileHPP/ComponentiConnesse.hpp"
 #include "../FileHPP/ControlloDSU.hpp"
 #include "../FileHPP/CostruzioneMST.hpp"
+#include "../FileHPP/RisoluzioneMinimax.hpp"
 
 using namespace std;
 
@@ -113,6 +114,17 @@ int main()
     stampaArchiMST();
 
     //fin qui prova di primo pezzo di CostruzioneMST
+
+    costruisciGrafoMST();
+    stampaGrafoMST();
+
+    cout << endl;
+    cout << "Valore minimax tra 1 e 7: " << trovaMinimax(1, 7) << endl;
+    cout << "Valore minimax tra 1 e 6: " << trovaMinimax(1, 6) << endl;
+    cout << "Valore minimax tra 3 e 5: " << trovaMinimax(3, 5) << endl;
+    cout << "Valore minimax tra 1 e 20: " << trovaMinimax(1, 20) << endl;
+
+    //fin qui prova di RisoluzioneMinimax
 
     return 0;
 }
