@@ -87,8 +87,7 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
 
 -"main":
   Al momento il main è stato usato per una piccola simulazione al fine di verificare
-  la funzionalità dei moduli "LettoreDataset","CostruzioneGrafo","GestioneFrequenze", "ComponentiConnesse",
-  "ControlloDSU" e un primo pezzo di "CostruzioneMST".
+  la funzionalità di tutti i moduli.
 
   Il main:
   -grazie all'include riesce a vedere i vari moduli;
@@ -99,7 +98,8 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   -costruisce e stampa gli archi pesati grazie alle funzioni implementate in GestioneFrequenze.hpp;
   -trova la componente connessa maggiore grazie alle funzioni implementate in ComponentiConnesse.hpp;
   -simula delle operazioni sui nodi e verifica che la DSU ne tenga traccia con le funzioni implementate in ControlloDSU.hpp;
-  -seleziona e stampa gli archi della CCM grazie alle funzioni implementate in CostruzioneMST.hpp.
+  -seleziona e ordina gli archi della CCM e costruisce l'MST, stampando il risultato di ogni passaggio,
+   grazie alle funzioni implementate in CostruzioneMST.hpp.
 
 
 
@@ -391,41 +391,41 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   -ordina tutti gli archi di archiCCM in ordine crescente di peso, nella funzione "void ordinaArchiCCM"(3),
    grazie alla funzione ausiliaria "MergeSort"(4);
    (Dati i risultati già noti sul funzionamento e la complessità del mergesort, nell'analisi 
-    non considererò Fusione come funzione distinta ausiliaria di MergeSort, ma parlerò semplicemente
-    di "MergeSort" per indicare risultati di questa funzione composta)
+   non considererò Fusione come funzione distinta ausiliaria di MergeSort, ma parlerò semplicemente
+   di "MergeSort" per indicare risultati di questa funzione composta)
   -stampa tutti gli archi pesati in archiCCM dopo essere stati ordinati.
   -costruisce l'MST, nella funzione "void costruisciMST"(5), grazie alle funzioni ausiliarie 
    "void inizializzaDSU"(6), "int trovaRappresentante"(7) e "void unisci"(8), del modulo ControlloDSU.
   -stampa tutti gli archi del MST.
 
 
-ESEMPIO:
+  ESEMPIO:
 
-Archi pesati della componente connessa maggiore:
+  Archi pesati della componente connessa maggiore:
 
-(2,3) peso 2
-(1,2) peso 1
-(3,4) peso 5
-(1,3) peso 4
+  (2,3) peso 2
+  (1,2) peso 1
+  (3,4) peso 5
+  (1,3) peso 4
 
-Dopo l’ordinamento, il modulo li esamina in questo ordine:
+  Dopo l’ordinamento, il modulo li esamina in questo ordine:
 
-(1,2) peso 1
-(2,3) peso 2
-(1,3) peso 4
-(3,4) peso 5
+  (1,2) peso 1
+  (2,3) peso 2
+  (1,3) peso 4
+  (3,4) peso 5
 
-A questo punto:
+  A questo punto:
 
--l’arco (1,2) viene inserito nel MST;
--l’arco (2,3) viene inserito nel MST;
--l’arco (1,3) non viene inserito, perché 1 e 3 risultano già collegati
-attraverso gli archi precedenti e aggiungerlo creerebbe un ciclo;
--l’arco (3,4) viene inserito.
+  -l’arco (1,2) viene inserito nel MST;
+  -l’arco (2,3) viene inserito nel MST;
+  -l’arco (1,3) non viene inserito, perché 1 e 3 risultano già collegati
+   attraverso gli archi precedenti e aggiungerlo creerebbe un ciclo;
+  -l’arco (3,4) viene inserito.
 
-Il MST finale sarà quindi formato dagli archi:
+  Il MST finale sarà quindi formato dagli archi:
 
-(1,2), (2,3), (3,4)
+  (1,2), (2,3), (3,4)
 
 
   STRUTTURE DATI UTILIZZATE:
@@ -478,3 +478,78 @@ Il MST finale sarà quindi formato dagli archi:
   si può affermare che la complessità diventa O(M*N) + O(O(M)*N^2)=O(M*N^2).
   Si potrebbe arrivare ad eliminare la dipendenza anche da M, lasciando solo quella da N, sebbene a questo punto
   la stima sia imprecisa e grossolana, ed arrivare alla versione O(O(N^2)*N^2)=O(N^4).
+
+
+
+-"RisoluzioneMinimax":
+  Ho implementato una prima versione. Il modulo, presi in input due nodi a e b, deve trovare il cammino minimax 
+  fra a e b, ossia il cammino che minimizza il valore del massimo peso di un arco attraversato e restituire 
+  tale valore.
+
+
+  ESEMPIO:
+
+  Si supponga che il MST abbia gli archi:
+  (1,2) con peso 1;
+  (2,3) con peso 4;
+  (2,4) con peso 2;
+  (4,5) con peso 7.
+
+  Allora il grafo del MST può essere visto come:
+
+  1 collegato a 2 con peso 1
+  2 collegato a 3 con peso 4
+  2 collegato a 4 con peso 2
+  4 collegato a 5 con peso 7
+
+  Se si vuole trovare il cammino minimax fra 1 e 5, nel MST esiste un unico cammino, 1-2-4-5,
+  ed il massimo peso incontrato lungo questo cammino è 7, dunque il risultato sarà 7.
+
+
+  IL MODULO:
+
+  -costruisce, nella funzione "void costruisciGrafoMST"(2), il grafo corrispondente al MST;
+  -per evitare di inserire nella lista di adiacenza un elemento già precedentemente inserito, 
+   usa la funzione ausiliaria "bool ricercaMST"(1);
+  -esegue una DFS ricorsiva sul MST, nella funzione "int DFSminimax"(3);
+  -durante questa DFS, ogni volta che attraversa un arco, confronta il peso di quell'arco 
+   con il massimo peso incontrato fino a quel momento sul cammino corrente, aggiornandolo se necessario;
+  -se durante la DFS raggiunge il nodo finale, restituisce il massimo peso incontrato lungo il cammino trovato,
+   se invece un ramo della DFS non porta al nodo finale, restituisce -1, che viene usato come indicatore di
+   "vicolo cieco", così che la chiamata precedente possa provare un altro vicino;
+  -infine, nella funzione "int trovaMinimax"(4), resetta il vettore visitatoMST prima di far partire
+   una nuova DFS, per evitare che i risultati di una DFS precedente possano compromettere il funzionamento
+   della successiva, e avvia una DFS a partire dal nodo iniziale con massimo peso iniziale uguale a 0.
+
+
+  STRUTTURE DATI UTILIZZATE:
+
+  -vector<vector<pair<int,int>>> per rappresentare il grafo del MST tramite liste di adiacenza pesate,
+   dove il primo elemento della coppia rappresenta in nodo e il secondo il peso dell'arco.
+  -vector<bool> per memorizzare se un nodo del MST è già stato visitato durante la DFS.
+
+
+  COMPLESSITÀ:
+
+  Se N è il numero di nodi della componente connessa maggiore, dunque l'MST avrà N-1 archi, e allora:
+
+  -la funzione (1) controlla se il nodo x è già presente in una lista di adiacenza, e per farlo 
+   scorre linearmente tutti gli elementi del vettore lista.
+   Nel caso peggiore la lista può avere N−1 elementi, perciò avrà complessità O(N);
+  -la funzione (2) scorre tutti gli archi del MST e per ciascun arco chiama due volte (1), mentre il resto
+   delle operazione ha costo costante. Dunque la complessità sarà (N-1)*O(N)=O(N^2);
+  -la funzione (3) visita ogni nodo al massimo una volta e visita ogni arco un numero di volte uguale
+   alla frequenza con cui appare nelle liste di adiacenza, cioè un numero costante, in relazione al fatto 
+   che gli archi siano N-1. Dunque la funzione avrà complessità O(N)+O(N)=O(N);
+  -la funzione (4) resetta il vettore visitatoMST, scorrendolo tutto, e avrà quindi complessità
+   lineare col numero di elementi del vettore. In questi esempi di prova ho considerato il vettore
+   lungo 101, anche se poi questa cosa verrà ottimizzata con le hash table. Per ora, in questa simulazione,
+   si potrebbe usare un vettore lungo appena quanto basta, cioè N, perciò questa parte avrebbe complessità O(N).
+   La funzione successivamente chiama (3), ed avrà perciò complessità totale O(N)+O(N)=O(N).
+
+  La complessità generale del modulo sarà dunque O(N)+O(N^2)+O(N)+O(N)=O(N^2).
+  Tuttavia bisogna osservare che se intendiamo cercare più cammini minimax su uno stesso dataset,
+  la funzione con complessità maggiore, (2), viene eseguita una sola volta, e poi le altre funzioni
+  agiranno sempre sullo stesso grafo del MST con complessità O(N), a prescindere dal numero di cammini
+  minimax richiesti. 
+
