@@ -19,11 +19,12 @@ Nel grafo:
 
 
 
-Prima idea di base del progetto completo:
+Idea di base del progetto completo rivisitata:
 
 L'idea è dividere il lavoro in moduli separati:
 
 - lettura dei dataset;
+- indicizzazione dei nodi mediante hash table;
 - costruzione del grafo;
 - gestione delle frequenze sugli archi;
 - ricerca della componente connessa maggiore;
@@ -38,38 +39,35 @@ del massimo arco attraversato.
 
 
 
-Strutture dati che verrano utilizzate:
+Strutture dati che verranno utilizzate:
 
 - liste di adiacenza per rappresentare il grafo;
-- hash tables (potenzialmente universal) per memorizzare le frequenze degli archi;
-- eventualmente altre strutture per la parte successiva 
-  alla gestione delle frequenze sugli archi.
-
+- hash table con hashing universale per l'indicizzazione dei nodi;
+- vettori e struct per rappresentare archi e pesi;
+- Disjoint Set Union (DSU) per verifiche durante la costruzione del Minimum Spanning Tree.
 
 
 
 Organizzazione dei file del programma:
 
-Il progetto sarà organizzato in moduli separati, ciascuno suddiviso in:
+Il progetto è organizzato in moduli separati. 
+Ogni modulo è contenuto in un file .hpp, che viene incluso dai moduli che ne hanno bisogno 
+tramite la direttiva #include.
+Questa suddivisione permette ai vari moduli del progetto di comunicare tra loro ed 
+inoltre il progetto sarà più leggibile e dunque più facile da rimaneggiare nel tempo.
 
-- un file ".hpp", che fungerà da header per essere letto dal main;
-- un file ".cpp", sostanzialmente identico al precedente, ma essendo .cpp 
-  permette di eseguire direttamente quel modulo qualora ce ne fosse bisogno.
-
-Questa suddivisione permette ai vari moduli del progetto di comunicare tra loro tramite
-il comando "#include "file.hpp"", inoltre il progetto sarà più leggibile, 
-e dunque più facile da rimaneggiare nel tempo.
-
-In particolare, il modulo principale "main.cpp" utilizzerà gli header ".hpp" 
-per accedere alle funzioni implementate negli altri moduli.
+In particolare, il programma verrà quindi eseguito a partire dal solo main.cpp, 
+che includerà progressivamente tutti i moduli del progetto.
 
 Ho scelto di mettere per adesso all'interno dei file.hpp anche le implementazioni,
 e non più solo le dichiarazioni, per facilitare l'esecuzione del programma da terminale.
+Dato che con questa struttura i file .cpp, main escluso, erano diventati pressoché inutili, li ho rimossi.
 
 
 I moduli saranno:
 
 - "LettoreDataset";
+- "IndicizzazioneHashTable";
 - "CostruzioneGrafo";
 - "GestioneFrequenze";
 - "ComponentiConnesse";
