@@ -92,6 +92,7 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   -prende in input "datasetprova.txt" dalla cartella FileInput;
   -legge il dataset grazie alla funzione implementata in LettoreDataset.hpp;
   -stampa il risultato ottenuto, ossia i cammini presenti in datasetprova.txt;
+  -indicizza i nodi e li salva con una HashTable, per poi stampare il risultato grazie alle funzioni implementate in IndicizzazioneHashTable.hpp;  
   -costruisce e stampa gli archi e il grafo grazie alle funzioni implementate in CostruzioneGrafo.hpp;
   -costruisce e stampa gli archi pesati grazie alle funzioni implementate in GestioneFrequenze.hpp;
   -trova la componente connessa maggiore grazie alle funzioni implementate in ComponentiConnesse.hpp;
@@ -132,6 +133,31 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   COMPLESSITÀ:
 
   La complessità è chiaramente lineare col numero di cammini nel file in input.
+
+
+-"IndicizzazioneHashTable":
+  Dopo la lettura del dataset, il primo problema strutturale che si presenta è la gestione dei nodi del grafo.
+  Infatti i nodi presenti nei dataset CAIDA non sono in generale numerati in modo comodo per essere usati 
+  direttamente come indici di un vettore: possono essere molto grandi, sparsi, e non consecutivi. 
+  Se si provasse a costruire il grafo usando direttamente questi valori come indici, 
+  bisognerebbe creare vettori enormi, quasi completamente vuoti, con un grande spreco di memoria
+  e un incremento notevole di tempo per le ricerche lineari.
+  Per risolvere questo problema, ho introdotto nel progetto questo modulo intermedio di indicizzazione dei nodi. 
+  L'idea è associare a ogni nodo reale del dataset un indice interno compatto, assegnato in ordine di arrivo: 
+  il primo nodo distinto incontrato riceve indice 0, il secondo indice 1, il terzo indice 2, e così via. 
+  In questo modo tutti i moduli successivi del progetto potranno lavorare non più sui valori originali dei nodi, 
+  ma su indici interi consecutivi compresi tra 0 e N-1, dove N è il numero di nodi distinti incontrati.
+
+  Per realizzare questa corrispondenza si usa una hash table con hashing universale. 
+  La hash table non serve qui a memorizzare un insieme generico di valori, ma a mantenere in modo efficiente 
+  la corrispondenza nodo reale del dataset - indice interno del programma, e, tramite un vettore separato, 
+  anche la corrispondenza inversa.
+  Questo modulo è quindi fondamentale per l'ottimizzazione del progetto, perché permette di abbandonare 
+  l’ipotesi arbitraria e falsa di lavorare con vettori di dimensione fissa come 100, 
+  e rende possibile una gestione più realistica dei dataset grandi.
+
+  Come si vedrà in seguito, la cosa più importante è che permetterà di accedere e fare ricerche sui vari nodi
+  in tempo costante, non più attraverso delle ricerche lineari.
 
 
 
