@@ -1,11 +1,13 @@
 #include <iostream>
 #include "../FileHPP/LettoreDataset.hpp"
+#include "../FileHPP/IndicizzazioneHashTable.hpp"
 #include "../FileHPP/CostruzioneGrafo.hpp"
 #include "../FileHPP/GestioneFrequenze.hpp"
 #include "../FileHPP/ComponentiConnesse.hpp"
 #include "../FileHPP/ControlloDSU.hpp"
 #include "../FileHPP/CostruzioneMST.hpp"
 #include "../FileHPP/RisoluzioneMinimax.hpp"
+
 
 using namespace std;
 
@@ -28,6 +30,24 @@ int main()
     }
     
     //fin qui prova di LettoreDataset
+
+    srand(static_cast<unsigned>(time(nullptr))); // seme iniziale per rand()
+
+    HashTable tabellaNodi(5); 
+    //per il dataset di prova, la dimensione iniziale è piccola per testare il rehashing 
+
+    for (int i = 0; i < cammini.size(); i++)
+    {
+        for (int j = 0; j < cammini[i].size(); j++)
+        {
+            tabellaNodi.cercaIndice(cammini[i][j]);
+        }
+    }
+    tabellaNodi.stampaParametri();
+    tabellaNodi.stampaHashTable();
+
+    //fin qui prova di IndicizzazioneHashTable
+
 
     cout << endl;
     cout << "Archi costruiti:" << endl;
@@ -71,17 +91,17 @@ int main()
 
 
 
-    cout << "Iniziale struttura DSU della componente maggiore: " << endl;
+    //cout << "Iniziale struttura DSU della componente maggiore: " << endl;
 
     inizializzaDSU();
-    stampaDSU();
+    //stampaDSU();
     
 
-    for (int i=0; i < componentemaggiore.size() - 1; i++) 
+    //for (int i=0; i < componentemaggiore.size() - 1; i++) 
     {
-        unisci(componentemaggiore[i],componentemaggiore[i+1]);
-        cout << endl << "Struttura DSU della componente maggiore dopo " << i+1 << " unioni:" << endl;
-        stampaDSU();
+        //unisci(componentemaggiore[i],componentemaggiore[i+1]);
+        //cout << endl << "Struttura DSU della componente maggiore dopo " << i+1 << " unioni:" << endl;
+        //stampaDSU();
 
     }
     //fin qui prova di ControlloDSU
