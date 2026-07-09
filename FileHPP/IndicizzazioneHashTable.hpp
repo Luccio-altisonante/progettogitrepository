@@ -166,6 +166,14 @@ public:
     {
         hasher.stampaParametri();
     };
+
+
+    //per il modulo CostruzioneGrafo ho bisogno di sapere quanti nodi distinti ci sono
+    int numeroNodiDistinti()
+    {
+        return indiciToNodi.size();
+        //ogni volta che aggiungo un nodo distinto aggiungo una posizione a indiciToNodi
+    }
 };
 
 #endif
