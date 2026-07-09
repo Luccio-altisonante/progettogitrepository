@@ -168,8 +168,9 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   -definisce una classe HashTable, che contiene le scatole della tabella hash e il vettore usato 
    per ricostruire il nodo reale a partire da un indice;
   -assegna gli indici ai nodi in ordine di arrivo;
-  -permette, dato il nodo reale, di ottenere il suo indice tramite la funzione cercaIndice;
-  -permette, dato un indice, di recuperare il nodo reale corrispondente tramite la funzione cercaNodoReale;
+  -permette, dato il nodo reale, di ottenere il suo indice tramite la funzione "int cercaIndice";
+  -permette, dato un indice, di recuperare il nodo reale corrispondente tramite la funzione "int cercaNodoReale";
+  -permette di ottenere il numero di nodi distinti indicizzati tramite la funzione "int numeroNodiDistinti";
   -gestisce eventuali collisioni tramite concatenamento, cioè memorizzando in ogni bucket un vettore di elementi;
   -ogni elemento della della hash table è un vector, in modo da gestire eventuali collisioni di nodi;
   -effettua un rehash della tabella quando una scatola supera i 5 elementi al suo interno.
@@ -215,7 +216,9 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
 
 
 -"CostruzioneGrafo":
-  Nella sua prima versione, 
+  Dopo essere stato ottimizzato grazie alle funzioni implementate in IndicizzazioneHashTable, 
+  questo modulo non lavora più direttamente sui valori reali dei nodi del dataset, ma sui loro indici compatti.
+  In questo modo si evita di costruire strutture enormi nel caso in cui i nodi del dataset siano grandi e sparsi.
   
 
   IL MODULO:
@@ -225,15 +228,23 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   -Prende ogni cammino letto dal dataset e lo traforma in archi("costruisciArchi");
     Un cammino [a,b,c,d] verrà trasformato negli archi (a,b),(b,c),(c,d);
     Successivamente vengono stampati tutti gli archi con "stampaArchi".
+  -Indicizza i nodi reali del dataset e li salva in una hash table ("indicizzaNodi") ogni nodo reale viene associato 
+   a un indice intero 0,1,2,… assegnato in ordine di arrivo.
+   Questa fase permette di sapere quanti nodi distinti compaiono nel dataset,
+   e quindi di assegnare la giusta dimensione al vettore delle liste di adiacenza.
   -Trasforma questi archi in un grafo, rappresentato tramite liste di adiacenza("costruisciGrafo");
-    Dato che il grafo è non orientato bisogna prestare attenzione alle ripetizioni, e per questo c'è "ricerca";
-    Successivamente viene stampato il grafo con "stampaGrafo".
+   per ogni arco (a,b), i nodi reali a e b vengono prima convertiti nei rispettivi indici, 
+   e poi inseriti nelle liste di adiacenza.
+   Dato che il grafo è non orientato bisogna prestare attenzione alle ripetizioni, e per questo c'è "ricerca";
+   Successivamente viene stampato il grafo con "stampaGrafo".
 
 
   STRUTTURE DATI UTILIZZATE:
 
   -vector<pair<int,int>> per memorizzare gli archi del grafo;
-  -vector<vector> per rappresentare il grafo tramite liste di adiacenza.
+  -vector<vector> per rappresentare il grafo tramite liste di adiacenza;
+  -HashTable del modulo IndicizzazioneHashTable per memorizzare i nodi già indicizzati
+   e permettere l'accesso rapido al nodo reale e al suo indice.
 
 
   COMPLESSITÀ:
@@ -244,13 +255,23 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
 
   -La funzione "costruisciArchi" scorre tutti i cammini e costruisce gli archi corrispondenti;
     Tale operazione richiede complessità O(M).
-  -La funzione "costruisciGrafo" scorre tutti gli archi presenti nel vector archi;
-     Prima di ogni inserimento viene eseguita "ricerca";
-       Nel caso peggiore, un nodo potrebbe essere connesso a tutti gli altri nodi del grafo,
-       quindi la ricerca può richiedere tempo O(N);
-     Poiché tale operazione viene effettuata per ciascun arco,
-     la complessità totale della costruzione del grafo risulta O(M * N).
+  -La funzione "indicizzaNodi" scorre tutti gli archi e inserisce nella hash table i nodi incontrati;
+   sapendo dalle precedenti analisi che quelle operazioni hanno costo costante, la complessità è O(M).
+  -La funzione costruisciGrafo scorre tutti gli archi e, per ciascuno di essi converte i due nodi reali 
+   nei rispettivi indici e controlla con "ricerca" se il vicino è già presente nella lista di adiacenza;
+   in caso contrario lo inserisce.
 
+  La conversione da nodo a indice ha costo atteso O(1) grazie alla hash table.
+  Il costo dominante rimane quindi la ricerca di duplicati nelle liste di adiacenza.
+  Nel caso peggiore, un nodo potrebbe essere connesso a tutti gli altri nodi, e quindi "ricerca"
+  potrebbe avere costo O(N). Di conseguenza, dato che la funzione viene chiamata per ogni arco, 
+  la costruzione completa del grafo richiede complessità O(M⋅N). 
+
+  Si osserva come l'ottimizzazione introdotta non sia sufficiente per migliorare il costo generale
+  del modulo. Questo accade perché la funzione "ricerca" compie ancora delle ricerche linerari nelle
+  liste di adiacenza, perciò il prossimo passo potrebbe essere introdurre una hash table anche per i 
+  vicini di ogni nodo, oppure rimuovere la funzione "ricerca", inserire anche i duplicati, per poi
+  rimuoverli successivamente in maniera efficiente.
 
 
 
