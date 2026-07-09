@@ -160,6 +160,58 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   in tempo costante, non più attraverso delle ricerche lineari.
 
 
+  IL MODULO:
+
+  -definisce una classe HashUniversale, che implementa una funzione hash della forma
+   h(x)=((ax+b) mod p ) mod m 
+   dove a e b sono scelti casualmente e p è un primo fissato;
+  -definisce una classe HashTable, che contiene le scatole della tabella hash e il vettore usato 
+   per ricostruire il nodo reale a partire da un indice;
+  -assegna gli indici ai nodi in ordine di arrivo;
+  -permette, dato il nodo reale, di ottenere il suo indice tramite la funzione cercaIndice;
+  -permette, dato un indice, di recuperare il nodo reale corrispondente tramite la funzione cercaNodoReale;
+  -gestisce eventuali collisioni tramite concatenamento, cioè memorizzando in ogni bucket un vettore di elementi;
+  -ogni elemento della della hash table è un vector, in modo da gestire eventuali collisioni di nodi;
+  -effettua un rehash della tabella quando una scatola supera i 5 elementi al suo interno.
+
+
+  STRUTTURE DATI UTILIZZATE:
+
+  -struct NodoConIndice, contenente:{int nodoReale; int indiceCorrisp} per rappresentare un nodo e il suo indice;
+  -hash table rappresentata come vector<vector<NodoConIndice>>, 
+   dove ogni posizione del vettore principale rappresenta un bucket;
+  -vector<int> indiciToNodi, in cui la posizione i contiene il nodo reale avente indice i;
+  -una classe HashUniversale, che memorizza i parametri casuali della funzione hash.
+
+
+  COMPLESSITÀ:
+
+  Se N è il numero di nodi distinti incontrati nel dataset, m la dimensione della hash table,
+  L la lunghezza di un elemento del vettore pricipale della hash table, allora:
+
+  -per cercare un nodo si calcola prima la scatola in cui deve trovarsi, operazione che richiede tempo costante, 
+   poi si scorre il vettore corrispondente a quella scatola finché termina o finchè il nodo non viene trovato.
+   Quindi il costo della ricerca è O(L). Avendo fissato una lunghezza massima costante (5 elementi) per ogni scatola,
+   che se viene superata viene fatto un rehash, posso dire che l'operazione ha costo costante O(1). 
+  -se un nodo non viene trovato si procede ad inserirlo, e per farlo si costruisce la struct corrispondente,
+   si effettua un push_back nella scatola corretta della hash table e un push_back nel vettore indiciToNodi,
+   tutte queste operazioni con costo costante O(1).
+  -per trovare l'indice di un nodo si esegue una ricerca e poi si accede ad un campo, quindi il costo si può
+   considerare sempre costante, e, all'inverso, per trovare il nodo a partire dall'indice basta accedere ad un
+   elemento del vettore indiciToNodi, chiaramente a costo costante O(1).
+  -Quando una scatola supera la lunghezza prefissata, viene effettuato un rehash: si genera una nuova 
+   funzione hash, la dimensione passa da m a 2*m + 1,  e si reinseriscono tutti gli elementi nella nuova tabella.
+   Se nella tabella in quel momento sono presenti N nodi distinti, il costo di un singolo rehash è O(N),
+   perché bisogna visitare e ricollocare tutti gli elementi già presenti.
+   Il rehash non avviene però a ogni inserimento, ma solo occasionalmente quando la tabella diventa troppo 
+   sbilanciata. Per questo motivo il suo costo si distribuisce su molte operazioni e non modifica il fatto che, 
+   nel funzionamento ordinario, le operazioni principali del modulo restano efficienti.
+   Inoltre, la crescita esponenziale della dimensione durante i rehash (2*m + 1 ogni volta), garantisce di
+   poter raggiungere una grande dimensione con un numero limitato di rehash. 
+   (Partendo da m=1 con soli 19 rehash si arriva ad m>1.000.000)
+
+  Si raggiunge quindi l'ottimo rislutato di costo medio costante O(1) per le operazioni di questo modulo. 
+
 
 
 -"CostruzioneGrafo":
