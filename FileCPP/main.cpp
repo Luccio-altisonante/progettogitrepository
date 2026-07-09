@@ -33,18 +33,18 @@ int main()
 
     srand(static_cast<unsigned>(time(nullptr))); // seme iniziale per rand()
 
-    HashTable tabellaNodi(5); 
+    //HashTable tabellaNodi(5); 
     //per il dataset di prova, la dimensione iniziale è piccola per testare il rehashing 
 
-    for (int i = 0; i < cammini.size(); i++)
-    {
-        for (int j = 0; j < cammini[i].size(); j++)
-        {
-            tabellaNodi.cercaIndice(cammini[i][j]);
-        }
-    }
-    tabellaNodi.stampaParametri();
-    tabellaNodi.stampaHashTable();
+    //for (int i = 0; i < cammini.size(); i++)
+    //{
+    //    for (int j = 0; j < cammini[i].size(); j++)
+    //    {
+    //        tabellaNodi.cercaIndice(cammini[i][j]);
+    //    }
+    //}
+    //tabellaNodi.stampaParametri();
+    //tabellaNodi.stampaHashTable();
 
     //fin qui prova di IndicizzazioneHashTable
 
