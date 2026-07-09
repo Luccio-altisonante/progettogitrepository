@@ -5,16 +5,19 @@
 #include <vector>
 
 #include "LettoreDataset.hpp"
+#include "IndicizzazioneHashTable.hpp"
 
 using namespace std;
 
 vector<pair<int, int>> archi;
 // vettore contenente tutti gli archi
 
-vector<vector<int>> grafoadj(100);
+vector<vector<int>> grafoadj;
 // grafo rappresentato tramite liste di adiacenza
 // intanto metto 100 come numero indicativo,
 // poi subentreeranno le hash table per i nodi grandi
+
+HashTable tabella(5);
 
 void costruisciArchi()
 {
@@ -59,25 +62,43 @@ bool ricerca(const vector<int> &lista, int x)
     return false;
 }
 
-void costruisciGrafo()
+//indicizzo prima i nodi, così grazie alla funzione numeroNodiDistinti, so quanto dovrà essere grande il vettore grafoadj
+void indicizzaNodi()
 {
     for (int i = 0; i < archi.size(); i++)
     {
-        int nodo1 = archi[i].first;
-        int nodo2 = archi[i].second;
+        tabella.cercaIndice(archi[i].first);
+        tabella.cercaIndice(archi[i].second);
+    }
+}
 
-        if (!ricerca(grafoadj[nodo1], nodo2))
-        {
-            grafoadj[nodo1].push_back(nodo2);
-        }
-        // se non è già presente, aggiunge nodo2 ai vicini di nodo1.
 
-        if (!ricerca(grafoadj[nodo2], nodo1))
+void costruisciGrafo()
+{
+    indicizzaNodi();
+    grafoadj.resize(tabella.numeroNodiDistinti());
+
+    for (int i = 0; i < archi.size(); i++)
+    {
+        int nodoReale1 = archi[i].first;
+        int nodoReale2 = archi[i].second;
+
+        //converto i nodi reali negli indici corrispondenti
+        int indice1 = tabella.cercaIndice(nodoReale1);
+        int indice2 = tabella.cercaIndice(nodoReale2);
+
+        if (!ricerca(grafoadj[indice1], indice2))
         {
-            grafoadj[nodo2].push_back(nodo1);
+            grafoadj[indice1].push_back(indice2);
         }
-        // se non è già presente, aggiunge nodo1 ai vicini di nodo2,
-        // perché il grafo è non orientato.
+        //se non è già presente, aggiunge l'indice del secondo nodo ai vicini dell'indice del primo.
+
+        if (!ricerca(grafoadj[indice2], indice1))
+        {
+            grafoadj[indice2].push_back(indice1);
+        }
+        //se non è già presente, aggiunge l'indice del primo nodo ai vicini dell'indice del secondo,
+        //perché il grafo è non orientato.
     }
 }
 
@@ -85,17 +106,14 @@ void stampaGrafo()
 {
     for (int i = 0; i < grafoadj.size(); i++)
     {
-        if (grafoadj[i].size() > 0)
-        { // se il nodo ha almeno un vicino, lo stampo.
-            cout << "Vicini nodo " << i << ": ";
+        cout << "Vicini nodo " << tabella.cercaNodoReale(i) << ": ";
 
-            for (int j = 0; j < grafoadj[i].size(); j++)
-            {
-                cout << grafoadj[i][j] << " ";
-            }
-
-            cout << endl;
+        for (int j = 0; j < grafoadj[i].size(); j++)
+        {
+            cout << tabella.cercaNodoReale(grafoadj[i][j]) << " ";
         }
+
+            cout << endl;      
     }
 }
 
