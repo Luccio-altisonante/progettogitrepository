@@ -10,10 +10,10 @@
 
 using namespace std;
 
-vector<ArcoPesato> archiCCM;
+vector<ArcoPesatoIndicizzato> archiCCM;
 //conterrà tutti gli archi appartenenti alla componente connessa maggiore
 
-vector<ArcoPesato> archiMST;
+vector<ArcoPesatoIndicizzato> archiMST;
 //conterrà tutti gli archi di archiCCM che faranno parte del MST
 
 
@@ -38,7 +38,7 @@ void selezionaArchiCCM()
 {
     for (int i = 0; i < archipesati.size(); i++)
     {
-        if (appartieneComponenteMaggiore(archipesati[i].nodo1))
+        if (appartieneComponenteMaggiore(archipesati[i].indice1))
         {
             archiCCM.push_back(archipesati[i]);
             //se il primo nodo di un arco appartiene alla componente connessa maggiore,
@@ -53,19 +53,19 @@ void stampaArchiCCM()
 {
     for (int i = 0; i < archiCCM.size(); i++)
     {
-        cout << "(" << archiCCM[i].nodo1 << "," << archiCCM[i].nodo2; cout << ")";
+        cout << "(" << archiCCM[i].indice1 << "," << archiCCM[i].indice2; cout << ")";
         cout << " con peso = " << archiCCM[i].peso << endl;
     }
 }
 
 
 //MergeSort visto a lezione, con l'unica modifica che prende un vector<Arcopesato> invece di un vector<int>
-void Fusione(vector<ArcoPesato> &a, int sx, int cx, int dx)
+void Fusione(vector<ArcoPesatoIndicizzato> &a, int sx, int cx, int dx)
 {
     int i = sx;
     int j = cx + 1;
     int k = 0;
-    vector<ArcoPesato> b(dx - sx + 1);
+    vector<ArcoPesatoIndicizzato> b(dx - sx + 1);
 
     while ((i <= cx) && (j <= dx))
     {
@@ -103,7 +103,7 @@ void Fusione(vector<ArcoPesato> &a, int sx, int cx, int dx)
 }
 
 
-void MergeSort(vector<ArcoPesato> &a, int sinistra, int destra) 
+void MergeSort(vector<ArcoPesatoIndicizzato> &a, int sinistra, int destra) 
 {
     if (sinistra < destra)
     {
@@ -128,7 +128,7 @@ void stampaArchiCCMordinati()
 
     for (int i = 0; i < archiCCM.size(); i++)
     {
-        cout << "(" << archiCCM[i].nodo1 << "," << archiCCM[i].nodo2 << ")";
+        cout << "(" << archiCCM[i].indice1 << "," << archiCCM[i].indice2 << ")";
         cout << " con peso = " << archiCCM[i].peso << endl;
     }
 }
@@ -141,8 +141,8 @@ void costruisciMST()
 
     for (int i = 0; i < archiCCM.size(); i++)
     {
-        int nodo1 = archiCCM[i].nodo1;
-        int nodo2 = archiCCM[i].nodo2;
+        int nodo1 = archiCCM[i].indice1;
+        int nodo2 = archiCCM[i].indice2;
 
         int rappresentante1 = trovaRappresentante(nodo1);
         int rappresentante2 = trovaRappresentante(nodo2);
@@ -161,7 +161,7 @@ void stampaArchiMST()
 {
     for(int i = 0; i < archiMST.size(); i++)
     {
-        cout << "(" << archiMST[i].nodo1 << ", " << archiMST[i].nodo2 << ")";
+        cout << "(" << archiMST[i].indice1 << ", " << archiMST[i].indice2 << ")";
         cout << " con peso = " << archiMST[i].peso << endl;
     }
 }

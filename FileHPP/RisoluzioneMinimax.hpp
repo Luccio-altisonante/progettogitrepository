@@ -34,8 +34,8 @@ void costruisciGrafoMST()
 {
     for (int i = 0; i < archiMST.size(); i++)
     {
-        int nodo1 = archiMST[i].nodo1;
-        int nodo2 = archiMST[i].nodo2;
+        int nodo1 = archiMST[i].indice1;
+        int nodo2 = archiMST[i].indice2;
         int peso = archiMST[i].peso;
 
         if (!ricercaMST(grafoadjMST[nodo1], nodo2))
