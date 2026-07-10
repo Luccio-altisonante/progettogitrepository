@@ -72,6 +72,27 @@ void indicizzaNodi()
     }
 }
 
+void eliminaDuplicati(vector<int>& v)
+{
+    //anche se passerò in input un vettore contenente gli indici corrispondenti ai nodi reali,
+    //li tratterò qui come se fossero nodi, solo per sfruttare la classe HashTable che ho già definito.
+    //gli indici degli elementi di visitati non avranno alcuna funzione.
+    int n = v.size();
+    HashTable visitati(n);
+
+    vector<int> senzaDuplicati;
+
+    for (int i = 0; i < n; i++)
+    {
+        if (!visitati.ricerca(v[i]))
+        {
+            //se non è già presente inserisco l'elemento nella hash table e nel vettore senzaDuplicati 
+            visitati.cercaIndice(v[i]);
+            senzaDuplicati.push_back(v[i]);
+        }
+    }
+    v = senzaDuplicati;
+}
 
 void costruisciGrafo()
 {
@@ -87,18 +108,17 @@ void costruisciGrafo()
         int indice1 = tabella.cercaIndice(nodoReale1);
         int indice2 = tabella.cercaIndice(nodoReale2);
 
-        if (!ricerca(grafoadj[indice1], indice2))
-        {
-            grafoadj[indice1].push_back(indice2);
-        }
-        //se non è già presente, aggiunge l'indice del secondo nodo ai vicini dell'indice del primo.
+        grafoadj[indice1].push_back(indice2);
+        //aggiunge l'indice del secondo nodo ai vicini dell'indice del primo.
 
-        if (!ricerca(grafoadj[indice2], indice1))
-        {
-            grafoadj[indice2].push_back(indice1);
-        }
-        //se non è già presente, aggiunge l'indice del primo nodo ai vicini dell'indice del secondo,
+        grafoadj[indice2].push_back(indice1);
+        //aggiunge l'indice del primo nodo ai vicini dell'indice del secondo,
         //perché il grafo è non orientato.
+    }
+
+    for (int i = 0; i < grafoadj.size(); i++)
+    {
+        eliminaDuplicati(grafoadj[i]);
     }
 }
 
