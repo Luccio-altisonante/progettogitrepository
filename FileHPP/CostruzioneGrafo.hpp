@@ -68,15 +68,6 @@ bool ricerca(const vector<int> &lista, int x)
     return false;
 }
 
-//indicizzo prima i nodi, così grazie alla funzione numeroNodiDistinti, so quanto dovrà essere grande il vettore grafoadj
-//void indicizzaNodi()
-//{
-//    for (int i = 0; i < archi.size(); i++)
-//    {
-//        tabella.cercaIndice(archi[i].first);
-//        tabella.cercaIndice(archi[i].second);
-//    }
-//}
 
 void eliminaDuplicati(vector<int>& v)
 {
@@ -102,7 +93,6 @@ void eliminaDuplicati(vector<int>& v)
 
 void costruisciGrafo()
 {
-    //indicizzaNodi();
     grafoadj.resize(tabella.numeroNodiDistinti());
 
     for (int i = 0; i < archi.size(); i++)
