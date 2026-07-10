@@ -115,6 +115,17 @@ private:
 public:
     HashTable(int size) : m(size), tabella(size), hasher() {}
 
+    bool ricerca(int x)
+    {
+        int h = hash(x);
+        for (auto i : tabella[h])
+        {
+            if (i.nodoReale == x)
+                return true;
+        }
+        return false;
+    }
+
     int cercaIndice(int nodo)
     {
         int h = hash(nodo);
