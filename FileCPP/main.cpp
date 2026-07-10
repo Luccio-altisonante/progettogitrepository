@@ -72,7 +72,7 @@ int main()
     cout << endl;
 
     costruisciarchipesati();
-
+    stampaTabellaArchiPesati();
     stampaarchipesati();
     //fin qui prova di GestioneFrequenze
 
