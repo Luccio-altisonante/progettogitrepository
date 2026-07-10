@@ -26,13 +26,17 @@ void costruisciArchi()
     {
         for (int j = 0; j < cammini[i].size() - 1; j++)
         {
-            int nodo1 = cammini[i][j];
-            int nodo2 = cammini[i][j + 1];
+            int nodoReale1 = cammini[i][j];
+            int nodoReale2 = cammini[i][j + 1];
+
+            int indice1 = tabella.cercaIndice(nodoReale1);
+            int indice2 = tabella.cercaIndice(nodoReale2);
+            //converto i nodi reali negli indici corrispondenti
 
             pair<int, int> arco;
 
-            arco.first = nodo1;
-            arco.second = nodo2;
+            arco.first = indice1;
+            arco.second = indice2;
 
             archi.push_back(arco);
             // aggiunge l'arco al vettore di tutti gli archi
@@ -44,7 +48,9 @@ void stampaArchi()
 {
     for (int i = 0; i < archi.size(); i++)
     {
-        cout << "(" << archi[i].first << ", " << archi[i].second << ")" << endl;
+        int nodoReale1 = tabella.cercaNodoReale(archi[i].first);
+        int nodoReale2 = tabella.cercaNodoReale(archi[i].second);
+        cout << "(" << nodoReale1 << ", " << nodoReale2 << ")" << endl;
     }
 }
 
@@ -63,14 +69,14 @@ bool ricerca(const vector<int> &lista, int x)
 }
 
 //indicizzo prima i nodi, così grazie alla funzione numeroNodiDistinti, so quanto dovrà essere grande il vettore grafoadj
-void indicizzaNodi()
-{
-    for (int i = 0; i < archi.size(); i++)
-    {
-        tabella.cercaIndice(archi[i].first);
-        tabella.cercaIndice(archi[i].second);
-    }
-}
+//void indicizzaNodi()
+//{
+//    for (int i = 0; i < archi.size(); i++)
+//    {
+//        tabella.cercaIndice(archi[i].first);
+//        tabella.cercaIndice(archi[i].second);
+//    }
+//}
 
 void eliminaDuplicati(vector<int>& v)
 {
@@ -96,17 +102,13 @@ void eliminaDuplicati(vector<int>& v)
 
 void costruisciGrafo()
 {
-    indicizzaNodi();
+    //indicizzaNodi();
     grafoadj.resize(tabella.numeroNodiDistinti());
 
     for (int i = 0; i < archi.size(); i++)
     {
-        int nodoReale1 = archi[i].first;
-        int nodoReale2 = archi[i].second;
-
-        //converto i nodi reali negli indici corrispondenti
-        int indice1 = tabella.cercaIndice(nodoReale1);
-        int indice2 = tabella.cercaIndice(nodoReale2);
+        int indice1 = archi[i].first;
+        int indice2 = archi[i].second;
 
         grafoadj[indice1].push_back(indice2);
         //aggiunge l'indice del secondo nodo ai vicini dell'indice del primo.
