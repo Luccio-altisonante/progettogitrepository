@@ -80,9 +80,6 @@ int main()
 
     costruisciComponenti();
 
-    trovaComponenteMaggiore();
-
-    
     cout << endl;
     stampaComponenteMaggiore();
     cout << endl;
