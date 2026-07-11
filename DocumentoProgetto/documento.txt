@@ -327,39 +327,45 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
 
 -"ComponentiConnesse":
 
-  Ho implementato una prima versione del modulo. Il suo ruolo è individuare
-  le componenti connesse del grafo costruito nei moduli precedenti.
-
+  Ho implementato una seconda versione del modulo. Il suo ruolo è individuare
+  la componente connessa maggiore del grafo costruito nei moduli precedenti.
+  Rispetto alla versione precedente, non si memorizzano più tutte le componenti connesse del grafo, 
+  per poi trovare la maggiore, ma si memorizza direttamente solo quella di dimensione massima.
 
   ESEMPIO:
 
   Grafo:
   1-2-3
   4-5
-  6-7-8
+  6-7-8-9
 
   Le componenti connesse risultano:
 
   {1,2,3}
   {4,5}
-  {6,7,8}
+  {6,7,8,9}
+
+  La componente connessa maggiore risulta:
+
+  {6,7,8,9}
 
 
   IL MODULO:
 
-  -scorre tutti i nodi del grafo;
-  -quando incontra un nodo non ancora visitato e che abbia almeno 1 vicino, avvia una visita DFS;
-  -durante la DFS vengono raggiunti tutti i nodi appartenenti alla stessa componente, con chiamate ricorsive;
-  -i nodi trovati vengono salvati in un vector temporaneo;
-  -terminata la DFS, il vector viene aggiunto al vector contenente tutte le componenti.
+  -scorre tutti gli indici del grafo, corrispondenti ai nodi reali;
+  -quando incontra un indice non ancora visitato, avvia una visita DFS;
+  -durante la DFS vengono raggiunti tutti gli indici appartenenti alla stessa componente, con chiamate ricorsive;
+  -gli indici trovati vengono salvati in un vector temporaneo componentecorrente;
+  -terminata la DFS, se questo vector ha dimensione maggiore dell'attuale componente maggiore, 
+   diventa la componente maggiore, altrimenti lo scarto e continuo.
+
 
 
   STRUTTURE DATI UTILIZZATE:
 
-  -vector<bool> visitato, che memorizza se un nodo è già stato visitato;
+  -vector<bool> visitato, per memorizzare se un nodo è già stato visitato;
   -vector<int> per memorizzare una singola componente connessa;
-  -vector<vector<int>> per memorizzare tutte le componenti del grafo.
-
+  
 
   COMPLESSITÀ:
 
