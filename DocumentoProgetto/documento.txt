@@ -42,7 +42,7 @@ del massimo arco attraversato.
 Strutture dati che verranno utilizzate:
 
 - liste di adiacenza per rappresentare il grafo;
-- hash table con hashing universale per l'indicizzazione dei nodi;
+- hash table con hashing universale per memorizzare nodi dopo essere stati indicizzati e per gestire le frequenze degli archi;
 - vettori e struct per rappresentare archi e pesi;
 - Disjoint Set Union (DSU) per verifiche durante la costruzione del Minimum Spanning Tree.
 
@@ -219,6 +219,8 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   Dopo essere stato ottimizzato grazie alle funzioni implementate in IndicizzazioneHashTable, 
   questo modulo non lavora più direttamente sui valori reali dei nodi del dataset, ma sui loro indici compatti.
   In questo modo si evita di costruire strutture enormi nel caso in cui i nodi del dataset siano grandi e sparsi.
+  Da questo punto in poi tutti i moduli che operano sulla struttura del grafo lavorano solo con tali indici, 
+  mentre la conversione inversa viene utilizzata soltanto nelle funzioni di stampa.
   
 
   IL MODULO:
@@ -255,9 +257,10 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   allora:
 
   -La funzione "costruisciArchi" scorre tutti i cammini e costruisce gli archi corrispondenti;
-    Tale operazione richiede complessità O(M).
-  -La funzione "indicizzaNodi" scorre tutti gli archi e inserisce nella hash table i nodi incontrati;
-   sapendo dalle precedenti analisi che quelle operazioni hanno costo costante, la complessità è O(M).
+   Tale operazione richiede complessità O(M).
+   Oltre a questo indicizza ogni volta i nodi di ogni arco e li inserisce nella hash table;
+   sapendo dalle precedenti analisi che quelle operazioni hanno costo costante, questa operazione costa O(M).
+   La complessità per costruire gli archi è dunque O(M)+O(M)=O(M).
   -Nella costruzione del grafo (tralasciando per ora la rimozione dei duplicati) si scorrono tutti gli archi 
    e si inseriscono i corrispondenti indici nelle liste di adiacenza, dunque tale funzione avrà complessità O(M).
   -La rimozione dei duplicati viene eseguita alla fine su ogni lista di adiacenza del grafo.
@@ -273,8 +276,10 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
 
 
 -"GestioneFrequenze":
-  Ho implementato una prima versione del modulo. Il suo ruolo è determinare quante volte 
-  ciascun arco compare all'interno dei cammini del dataset.
+  Dopo essere stato ottimizzato grazie alle strutture implementate nel modulo IndicizzazioneHashTable
+  e altre strutture simile implementate in questo modulo, 
+  GestioneFrequenze lavora direttamente sugli indici dei nodi invece che sui loro identificativi reali.
+  Il suo ruolo è determinare quante volte  ciascun arco compare all'interno dei cammini del dataset.
   Tali frequenze verranno successivamente utilizzate come pesi degli archi del grafo.
 
 
@@ -286,26 +291,37 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
 
   IL MODULO:
 
-  -scorre tutti gli archi presenti nel vector archi;
-  -controlla se l'arco è già presente tra gli archi pesati e nel caso in che posizione;
-  -se presente aumenta di 1 il peso dell'arco pesato che si trova in quella posizione;
-  -se non presente crea un nuovo arco pesato con peso 1 e lo aggiunge ad archipesati.
+  ha delle funzioni che permettono principalmente di costruire gli archi pesati del grafo.
+
+  -Ogni arco viene inserito in una hash table dedicata;
+  -se l'arco non è ancora presente viene creato con peso iniziale pari a 1;
+  -se invece è già presente viene semplicemente incrementato il suo peso;
+  -alla fine viene estratto dalla hash table il vettore finale di tutti gli archi pesati, 
+   che verrà utilizzato dai moduli successivi.
 
 
   STRUTTURE DATI UTILIZZATE:
 
-  -struct ArcoPesato, contenente:{int nodo1;int nodo2;int peso} per rappresentare un arco pesato;
-  -vector<ArcoPesato> per rappresentare tutti gli archi con il relativo peso.
+  -struct ArcoPesatoIndicizzato, contenente:{int nodo1;int nodo2;int peso} per rappresentare un arco pesato;
+  -hash table per memorizzare gli archi pesati già visitati;
+  -vector<ArcoPesatoIndicizzato> per rappresentare tutti gli archi con il relativo peso.
 
 
   COMPLESSITÀ:
 
   Se M è il numero totale di archi presenti nel vector archi, allora:
 
-  Per ogni arco viene effettuata una ricerca nel vector archipesati. Nel caso peggiore 
-  ogni nuovo arco risulta diverso dai precedenti, quindi il numero totale di confronti risulterebbe:
-  
-  0 + 1 + 2 + 3 + ... + M = M(M+1)/2, Pertanto la complessità del modulo risulta O(M²).
+  Per ogni arco vengono eseguite le operazioni:
+
+  -calcolo della funzione hash;
+  -ricerca all'interno della scatola corrispondente;
+  -eventuale incremento del peso oppure inserimento del nuovo arco;
+  -eventuale rehash già affrontato nei moduli precedenti.
+
+  Per l'analisi già fatta sull'hash table, costruire l'intero insieme degli archi pesati richiede complessità O(M).
+  L'estrazione del vettore finale degli archi pesati richiede invece tempo lineare col numero di archi distinti.
+  Questo è sicuramente <= M, perciò anche l'estrazione richiederà complessità O(M).
+  In totale, O(M)+O(M)=O(M).
 
 
 
