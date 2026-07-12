@@ -88,19 +88,19 @@ int main()
 
 
 
-    cout << "Iniziale struttura DSU della componente maggiore: " << endl;
+    //cout << "Iniziale struttura DSU della componente maggiore: " << endl;
 
     inizializzaDSU();
-    stampaDSU();
+    //stampaDSU();
     
 
-    for (int i=0; i < componentemaggiore.size() - 1; i++) 
-    {
-        unisci(componentemaggiore[i],componentemaggiore[i+1]);
-        cout << endl << "Struttura DSU della componente maggiore dopo " << i+1 << " unioni:" << endl;
-        stampaDSU();
+    //for (int i=0; i < componentemaggiore.size() - 1; i++) 
+    //{
+    //    unisci(componentemaggiore[i],componentemaggiore[i+1]);
+    //    cout << endl << "Struttura DSU della componente maggiore dopo " << i+1 << " unioni:" << endl;
+    //    stampaDSU();
 
-    }
+    //}
     //fin qui prova di ControlloDSU
 
 
