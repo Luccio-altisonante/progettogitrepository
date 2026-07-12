@@ -16,29 +16,37 @@ vector<ArcoPesatoIndicizzato> archiCCM;
 vector<ArcoPesatoIndicizzato> archiMST;
 //conterrà tutti gli archi di archiCCM che faranno parte del MST
 
+vector<bool> appartieneCCM;
+//appartieneCCM[i] vale true se il nodo di indice i appartiene alla componente connessa maggiore, false altrimenti.
 
-//questa funzione mi dice se un nodo appartiene alla componente connessa maggiore o meno
-//(in questo modulo il nodo sarà un nodo di un arco pesato)
-bool appartieneComponenteMaggiore(int nodo)
+
+void costruisciVettoreCCM()
 {
-    for (int i = 0; i < componentemaggiore.size(); i++)
+    appartieneCCM.resize(grafoadj.size());
+    for (int i = 0; i < grafoadj.size(); i++)
     {
-        if (componentemaggiore[i] == nodo)
-        {
-            return true;
-        }
+        appartieneCCM[i] = false;
     }
 
-    return false;
+    for (int i = 0; i < componentemaggiore.size(); i++)
+    {
+        appartieneCCM[componentemaggiore[i]] = true;
+    }
+    //componentemaggiore contiene la lista degli indici dei nodi appartenenti alla componente connessa maggiore.
+    //Nel vettore appartieneCCM, la posizione i del vettore corrisponde al nodo di indice i.
+    //Per questo, leggendo gli indici contenuti in componentemaggiore, è sufficiente porre a true la posizione 
+    //corrispondente di appartieneCCM,
 }
 
 
 
 void selezionaArchiCCM()
 {
+    costruisciVettoreCCM();
+
     for (int i = 0; i < archipesati.size(); i++)
     {
-        if (appartieneComponenteMaggiore(archipesati[i].indice1))
+        if (appartieneCCM[archipesati[i].indice1])
         {
             archiCCM.push_back(archipesati[i]);
             //se il primo nodo di un arco appartiene alla componente connessa maggiore,
@@ -53,7 +61,8 @@ void stampaArchiCCM()
 {
     for (int i = 0; i < archiCCM.size(); i++)
     {
-        cout << "(" << archiCCM[i].indice1 << "," << archiCCM[i].indice2; cout << ")";
+        cout << "(" << tabella.cercaNodoReale(archiCCM[i].indice1) << ",";
+        cout << tabella.cercaNodoReale(archiCCM[i].indice2) << ")";
         cout << " con peso = " << archiCCM[i].peso << endl;
     }
 }
@@ -128,7 +137,8 @@ void stampaArchiCCMordinati()
 
     for (int i = 0; i < archiCCM.size(); i++)
     {
-        cout << "(" << archiCCM[i].indice1 << "," << archiCCM[i].indice2 << ")";
+        cout << "(" << tabella.cercaNodoReale(archiCCM[i].indice1) << ",";
+        cout << tabella.cercaNodoReale(archiCCM[i].indice2) << ")";
         cout << " con peso = " << archiCCM[i].peso << endl;
     }
 }
@@ -141,17 +151,17 @@ void costruisciMST()
 
     for (int i = 0; i < archiCCM.size(); i++)
     {
-        int nodo1 = archiCCM[i].indice1;
-        int nodo2 = archiCCM[i].indice2;
+        int indice1 = archiCCM[i].indice1;
+        int indice2 = archiCCM[i].indice2;
 
-        int rappresentante1 = trovaRappresentante(nodo1);
-        int rappresentante2 = trovaRappresentante(nodo2);
+        int rappresentante1 = trovaRappresentante(indice1);
+        int rappresentante2 = trovaRappresentante(indice2);
 
         if (rappresentante1 != rappresentante2)
         {
             archiMST.push_back(archiCCM[i]);
 
-            unisci(nodo1, nodo2);
+            unisci(indice1, indice2);
         }
     }
 }
@@ -161,7 +171,8 @@ void stampaArchiMST()
 {
     for(int i = 0; i < archiMST.size(); i++)
     {
-        cout << "(" << archiMST[i].indice1 << ", " << archiMST[i].indice2 << ")";
+        cout << "(" << tabella.cercaNodoReale(archiMST[i].indice1) << ", ";
+        cout << tabella.cercaNodoReale(archiMST[i].indice2) << ")";
         cout << " con peso = " << archiMST[i].peso << endl;
     }
 }
