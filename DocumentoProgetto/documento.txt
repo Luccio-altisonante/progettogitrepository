@@ -591,9 +591,9 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
  
 
 -"RisoluzioneMinimax":
-  Ho implementato una prima versione. Il modulo, presi in input due nodi a e b, deve trovare il cammino minimax 
-  fra a e b, ossia il cammino che minimizza il valore del massimo peso di un arco attraversato e restituire 
-  tale valore.
+  Ho implementato una prima versione ottimizzata del modulo. Il modulo, presi in input due nodi a e b, 
+  deve trovare il cammino minimax fra a e b, ossia il cammino che minimizza il valore del massimo peso
+  di un arco attraversato e restituire tale valore.
 
 
   ESEMPIO:
@@ -617,48 +617,44 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
 
   IL MODULO:
 
-  -costruisce, nella funzione "void costruisciGrafoMST"(2), il grafo corrispondente al MST;
-  -per evitare di inserire nella lista di adiacenza un elemento già precedentemente inserito, 
-   usa la funzione ausiliaria "bool ricercaMST"(1);
-  -esegue una DFS ricorsiva sul MST, nella funzione "int DFSminimax"(3);
+  -costruisce, nella funzione "void costruisciGrafoMST"(1), il grafo corrispondente al MST;
+  -grazie al fatto che archiMST contiene già gli archi del Minimum Spanning Tree, ogni arco compare 
+   una sola volta e non è più necessario effettuare controlli per evitare inserimenti duplicati;
+  -esegue una DFS ricorsiva sul MST, nella funzione "int DFSminimax"(2);
   -durante questa DFS, ogni volta che attraversa un arco, confronta il peso di quell'arco 
    con il massimo peso incontrato fino a quel momento sul cammino corrente, aggiornandolo se necessario;
   -se durante la DFS raggiunge il nodo finale, restituisce il massimo peso incontrato lungo il cammino trovato,
    se invece un ramo della DFS non porta al nodo finale, restituisce -1, che viene usato come indicatore di
    "vicolo cieco", così che la chiamata precedente possa provare un altro vicino;
-  -infine, nella funzione "int trovaMinimax"(4), resetta il vettore visitatoMST prima di far partire
-   una nuova DFS, per evitare che i risultati di una DFS precedente possano compromettere il funzionamento
-   della successiva, e avvia una DFS a partire dal nodo iniziale con massimo peso iniziale uguale a 0.
+  -infine, nella funzione "int trovaMinimax"(3), prima verifica che entrambi i nodi richiesti appartengano 
+   effettivamente al dataset, e in caso contrario restituisce -2. Successivamente traduce i due nodi reali in input
+   nei rispettivi indici tramite la hash table, resetta il vettore visitatoMST per preparare una nuova DFS
+   e avvia la ricerca sul grafo del MST.
 
 
   STRUTTURE DATI UTILIZZATE:
 
   -vector<vector<pair<int,int>>> per rappresentare il grafo del MST tramite liste di adiacenza pesate,
-   dove il primo elemento della coppia rappresenta in nodo e il secondo il peso dell'arco.
+   dove il primo elemento della coppia rappresenta l'indice del nodo vicino e il secondo il peso dell'arco.
   -vector<bool> per memorizzare se un nodo del MST è già stato visitato durante la DFS.
 
 
   COMPLESSITÀ:
 
-  Se N è il numero di nodi della componente connessa maggiore, dunque l'MST avrà N-1 archi, e allora:
+  Se N è il numero totale di nodi del grafo, la componente connessa maggiore avrà comunque al più N nodi,
+  dunque l'MST avrà al più N-1 archi, e allora:
 
-  -la funzione (1) controlla se il nodo x è già presente in una lista di adiacenza, e per farlo 
-   scorre linearmente tutti gli elementi del vettore lista.
-   Nel caso peggiore la lista può avere N−1 elementi, perciò avrà complessità O(N);
-  -la funzione (2) scorre tutti gli archi del MST e per ciascun arco chiama due volte (1), mentre il resto
-   delle operazione ha costo costante. Dunque la complessità sarà (N-1)*O(N)=O(N^2);
-  -la funzione (3) visita ogni nodo al massimo una volta e visita ogni arco un numero di volte uguale
-   alla frequenza con cui appare nelle liste di adiacenza, cioè un numero costante, in relazione al fatto 
-   che gli archi siano N-1. Dunque la funzione avrà complessità O(N)+O(N)=O(N);
-  -la funzione (4) resetta il vettore visitatoMST, scorrendolo tutto, e avrà quindi complessità
-   lineare col numero di elementi del vettore. In questi esempi di prova ho considerato il vettore
-   lungo 101, anche se poi questa cosa verrà ottimizzata con le hash table. Per ora, in questa simulazione,
-   si potrebbe usare un vettore lungo appena quanto basta, cioè N, perciò questa parte avrebbe complessità O(N).
-   La funzione successivamente chiama (3), ed avrà perciò complessità totale O(N)+O(N)=O(N).
+  -la funzione (1) ridimensiona i vettori delle liste di adiacenza e dei visitati, rendendoli della stessa 
+   dimensione di grafoadj, e successivamente scorre tutti gli archi del Minimum Spanning Tree.
+   La complessità sarà quindi 2*O(N)+O(N-1)=O(N);
+  -La funzione (2) esegue una DFS sul Minimum Spanning Tree. Ogni nodo viene visitato al più una sola volta, 
+   poiché dopo la prima visita viene marcato nel vettore visitatoMST e non può essere visitato nuovamente. 
+   Inoltre, durante l'intera esecuzione, ogni arco del MST viene esaminato esattamente due volte, 
+   una per ciascuno dei suoi estremi. Per le premesse si può dunque dire che il costo complessivo è
+   O(N)+2*O(N−1)=O(N).
+  -la funzione (3) esegue massimo quattro ricerche nella hash table, entrambe di costo medio O(1), resetta 
+   il vettore visitatoMST, operazione che richiede O(N), e infine chiama (2). Pertanto la funzione 
+   ha complessità complessiva O(1)+O(N)+O(N)=O(N).
 
-  La complessità generale del modulo sarà dunque O(N)+O(N^2)+O(N)+O(N)=O(N^2).
-  Tuttavia bisogna osservare che se intendiamo cercare più cammini minimax su uno stesso dataset,
-  la funzione con complessità maggiore, (2), viene eseguita una sola volta, e poi le altre funzioni
-  agiranno sempre sullo stesso grafo del MST con complessità O(N), a prescindere dal numero di cammini
-  minimax richiesti. 
+  La complessità totale del modulo risulta quindi O(N)+O(N)+O(N)=O(N).
 
