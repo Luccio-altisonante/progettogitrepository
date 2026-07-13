@@ -133,6 +133,9 @@ int main()
     //fin qui prova di primo pezzo di CostruzioneMST
 
     costruisciGrafoMST();
+    cout << endl;
+    cout << "Grafo del MST tramite liste di adiacenza: ";
+    cout << endl;
     stampaGrafoMST();
 
     cout << endl;
@@ -140,6 +143,8 @@ int main()
     cout << "Valore minimax tra 1 e 6: " << trovaMinimax(1, 6) << endl;
     cout << "Valore minimax tra 3 e 5: " << trovaMinimax(3, 5) << endl;
     cout << "Valore minimax tra 1 e 20: " << trovaMinimax(1, 20) << endl;
+    cout << "Valore minimax tra 1 e 30: " << trovaMinimax(1, 30) << endl;
+    cout << "Valore minimax tra 21 e 20: " << trovaMinimax(21, 20) << endl;
 
     //fin qui prova di RisoluzioneMinimax
 
