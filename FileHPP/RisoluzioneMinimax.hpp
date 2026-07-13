@@ -8,49 +8,33 @@
 
 using namespace std;
 
-vector<vector<pair<int,int>>> grafoadjMST(100);
-//sarà il grafo del MST rappresentato tramite liste di adiacenza. 
-//un vettore di grafoadjMST conterrà delle coppie in cui il primo elemento rappresenta il nodo, il secondo il peso
+vector<vector<pair<int, int>>> grafoadjMST;
+//grafo del MST rappresentato tramite liste di adiacenza, in ogni coppia il primo elemento rappresenta
+//l'indice del nodo vicino, il secondo elemento rappresenta il peso dell'arco.
 
-vector<bool> visitatoMST(100, false);
+vector<bool> visitatoMST;
+//visitatoMST[i] indica se il nodo di indice i è già stato visitato dalla DFS.
 
-
-bool ricercaMST(const vector<pair<int,int>> &lista, int x)
-{
-    // controlla se x è già presente nella lista
-    for (int i = 0; i < lista.size(); i++)
-    {
-        if (lista[i].first == x)
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
 
 
 void costruisciGrafoMST()
 {
+    grafoadjMST.resize(grafoadj.size());
+    visitatoMST.resize(grafoadjMST.size());
+
     for (int i = 0; i < archiMST.size(); i++)
     {
-        int nodo1 = archiMST[i].indice1;
-        int nodo2 = archiMST[i].indice2;
+        int indice1 = archiMST[i].indice1;
+        int indice2 = archiMST[i].indice2;
         int peso = archiMST[i].peso;
 
-        if (!ricercaMST(grafoadjMST[nodo1], nodo2))
-        {
-            
-            grafoadjMST[nodo1].push_back({nodo2,peso});
-        }
-        // se non è già presente, aggiunge nodo2 ai vicini di nodo1, con peso = peso.
+        grafoadjMST[indice1].push_back({indice2,peso});
+        //aggiunge indice2 ai vicini di indice1, con peso = peso.
 
-        if (!ricercaMST(grafoadjMST[nodo2], nodo1))
-        {
-            grafoadjMST[nodo2].push_back({nodo1,peso});
-        }
-        // se non è già presente, aggiunge nodo1 ai vicini di nodo2,
-        // perché il grafo è non orientato, sempre con peso = peso.
+        grafoadjMST[indice2].push_back({indice1,peso});
+        //aggiunge nodo1 ai vicini di nodo2, perché il grafo è non orientato, sempre con peso = peso.
+        //Non è necessario controllare eventuali duplicati perché archiMST contiene già gli archi 
+        //del Minimum Spanning Tree, quindi ogni arco compare una sola volta.
     }
 }
 
@@ -61,11 +45,11 @@ void stampaGrafoMST()
     {
         if (grafoadjMST[i].size() > 0)
         { // se il nodo ha almeno un vicino, lo stampo.
-            cout << "Vicini nodo " << i << ": ";
+            cout << "Vicini nodo " << tabella.cercaNodoReale(i) << ": ";
 
             for (int j = 0; j < grafoadjMST[i].size(); j++)
             {
-                cout << grafoadjMST[i][j].first << " con peso "; 
+                cout << tabella.cercaNodoReale(grafoadjMST[i][j].first) << " con peso ";
                 cout << grafoadjMST[i][j].second << "; ";
             }
 
@@ -130,18 +114,29 @@ int DFSminimax(int nodoattuale, int nodofinale, int maxpesoattuale)
     }
 }
 
-int trovaMinimax(int a, int b)
+int trovaMinimax(int nodoReale1, int nodoReale2)
 {
+    if (!tabella.ricerca(nodoReale1) || !tabella.ricerca(nodoReale2))
+    {
+        return -2;
+    }
+    //se un nodo non fa parte del dataset restituisco -2. Scelgo -2 e non -1 per distinguere la tipologia
+    //di errore durante i test dal main
+
+    int indice1 = tabella.cercaIndice(nodoReale1);
+    int indice2 = tabella.cercaIndice(nodoReale2);
+    //arrivano in input i nodi reali ma si lavora sugli indici corrispondenti
+
     for (int i = 0; i < visitatoMST.size(); i++)
     {
         visitatoMST[i] = false;
     }
-    // prima di iniziare una nuova DFS, azzero il vettore dei visitati
+    //Prima di una nuova DFS resetto sempre tutto il vettore ponendolo false, perché
+    //ogni chiamata è indipendente dalla precedente.
 
-    return DFSminimax(a, b, 0);
-    // avvio la DFS dal nodo iniziale.
-    // All'inizio il cammino non contiene ancora archi, quindi pongo
-    // maxpesoattuale = 0.
+    return DFSminimax(indice1, indice2, 0);
+    //avvio la DFS dal nodo iniziale.
+    //All'inizio il cammino non contiene ancora archi, quindi pongo maxpesoattuale = 0.
 }
 
 #endif
