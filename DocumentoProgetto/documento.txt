@@ -441,14 +441,11 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
    se coincide con l'indice stesso, allora, per definizione, è il rappresentante, e lo restituisce, altrimenti
    richiama la funzione su quell'elemento trovato. Andando avanti così, per le proprietà di costruzione,
    si arriverà sempre a trovare un rappresentante.
+   Tuttavia, grazie alla path compression, durante il ritorno della ricorsione tutti i nodi attraversati
+   vengono collegati direttamente al rappresentante trovato. 
   -(3)void unisci: prende in input gli indici di due nodi e ne trova i rispettivi rappresentanti 
    con la funzione precedente. Se i rappresentanti sono uguali non fa niente, altrimenti sostituisce l'elemento
-   di indice uguale al rappresentantedel secondo nodo del vector padri con il rappresentante del primo nodo. 
-   Si cambia il padre di rappresentante2 e non di indice2 perché così tutti gli elementi che avevano 
-   come rappresentante rappresentante2, quindi che appartenevano al secondo insieme, adesso avranno 
-   rappresentante1 come rappresentante, e faranno tutti parte del primo insieme. 
-   Altrimenti solo nodo2 ed i suoi figli si sarebbero spostati nel primo insieme,
-   lasciando tutti gli altri nodi del secondo insieme lì dentro (anche se questo non deve esistere più).
+   di indice uguale al rappresentante del secondo nodo del vector padri con il rappresentante del primo nodo. 
   -(4)void stampaDSU: stampa i nodi ed i rispettivi padri al momento della chiamata.
 
 
@@ -466,9 +463,16 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   -la funzione (1) visita tutti i nodi una sola volta e compie numero costante di operazioni per iterazione,
    dunque avrà complessità O(N);
   -la funzione (2) risale ricorsivamente la catena dei padri. Nel caso peggiore tale catena può contenere N nodi. 
-   La complessità sarà dunque semplicemente O(N).
+   La complessità sarebbe dunque semplicemente O(N).
+   Tuttavia, con l'introduzione della path compression, le chiamate successive sugli stessi nodi 
+   risulteranno molto più veloci. Per questo motivo il costo di una singola operazione rimane O(N) 
+   nel caso pessimo, ma il costo ammortizzato su una lunga sequenza di chiamate, come avviene nel 
+   modulo CostruzioneMST, è molto inferiore e, nella pratica, risulta quasi costante.
   -la funzione (3) esegue due volte la funzione (2) e un numero costante di altre operazioni,
    ne segue che la complessità sarà 2*O(N)+O(1)=O(N).
+   Tuttavia anche questa funzione viene molto ottimizzata dall'introduzione della path compression,
+   perché sfruttando i risultati della funzione precedente si può raggiungere un tempo quasi costante
+   anche per questa.  
 
   Dunque sommando tutti i contributi, il modulo, dopo una prima ottimizzazione, avrà complessità O(N).
 
@@ -566,6 +570,14 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   -la funzione (5) chiama 1 volta (6), poi, per ogni arco della componente connessa maggiore,chiama 2 volte (7) e 
    1 volta (8). Dall'analisi già svolta nel modulo ControlloDSU, sappiamo che (6)=O(N), (7)=O(N), (8)=O(N),
    dunque avrà complessità O(N) + D*(3*O(N))=O(D*N).
+   Questa stima rimane invariata anche dopo l'introduzione della path compression, infatti una singola 
+   chiamata a trovaRappresentante può ancora richiedere, nel caso peggiore, di attraversare una 
+   catena di padri lunga O(N). Tuttavia, la path compression modifica la struttura della DSU durante 
+   l'esecuzione, facendo puntare direttamente al rappresentante tutti i nodi attraversati.
+   Di conseguenza, quando la funzione viene richiamata molte volte, come in questo caso, le ricerche 
+   successive risultano generalmente molto più rapide rispetto alle precedenti. Anche se la stima teorica
+   nel caso peggiore rimane invariata, il costo reale dell'algoritmo risulta quindi
+   sensibilmente inferiore rispetto alla versione priva di path compression.
 
   -La complessità generale del modulo risulta quindi O(N)+O(M)+O(DlogD)+O(D*N). Si può modificare la stima
    rendendola meno precisa ma dipendente da meno parametri. Si ha come ipotesi D <= M, in quanto 
