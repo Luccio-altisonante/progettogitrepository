@@ -383,10 +383,11 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
 
 -"ControlloDSU":
   
-  Ho implementato una prima versione del modulo. Questo modulo svolge esclusivamente un ruolo di appoggio
-  e aiuto al modulo successivo, "CostruzioneMST". Infatti, dopo aver trovato la componente connessa maggiore,
-  si vorrebbe costruire il Minimum Spanning Tree con gli archi pesati già trovati, ed è qui che sorge il problema
-  che questo modulo è adibito a risolvere: 
+  Ho implementato una versione ottimizzata del modulo, arricchita con le tecniche di Path Compression 
+  e Union by Size. Questo modulo svolge esclusivamente un ruolo di appoggio e aiuto al modulo successivo,
+  "CostruzioneMST". Infatti, dopo aver trovato la componente connessa maggiore, si vorrebbe costruire 
+  il Minimum Spanning Tree con gli archi pesati già trovati, ed è qui che sorge il problema che questo 
+  modulo è adibito a risolvere: 
   sapere se i due estremi dell'arco appartengano già allo stesso insieme di nodi dell'albero costruito 
   fino a questo momento. Questa informazione è importante perché se la risposta è negativa, posso tranquillamente
   inserire l'arco nel MST, e aggiornare la DSU unendo i due insiemi distinti, ma se la risposta è positiva 
@@ -398,9 +399,10 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   un solo vettore per rappresentare la DSU, e fare in modo che non sia più necessario cercare ogni volta 
   dove si trovi un nodo all'interno della struttura dati.
 
-  Per questo motivo viene utilizzato un semplice vector<int> padri, in cui la posizione del vettore 
-  rappresenta direttamente l'indice del nodo e il valore contenuto rappresenta l'indice del padre.
-  Ad esempio padri[4]=2 significa che il nodo avente indice 4 ha come padre il nodo avente indice 2.
+  Per questo motivo vengono utilizzati semplicemente due vettori;
+  un vector<int> padri, in cui la posizione rappresenta l'indice del nodo e il valore contenuto 
+  rappresenta l'indice del padre e un vector<int> dimensione, dove ogni posizione i memorizza il 
+  numero totale di nodi appartenenti all'albero che ha come radice (rappresentante) il nodo i.
   
 
   NEL MODULO:
@@ -410,9 +412,11 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   allora quello si chiamerà "rappresentante" di quell'insieme di nodi.
   Quando si vuole aggiungere, nella costruzione dell'MST, un arco (a,b), 
   il modulo verifica che a e b appartengano a due insiemi disgiunti, 
-  se è così unisce i due insiemi,
-  sostituendo il campo "padre" del rappresentante di b con il rappresentante dell'insieme a cui appartiene a.  
-  
+  Se è così, unisce i due insiemi sfruttando il metodo della Union by Size: 
+  per evitare di creare alberi troppo profondi, si aggancia sempre la radice dell'albero con meno nodi
+  sotto la radice dell'albero con più nodi, aggiornando di conseguenza la dimensione della nuova radice 
+  sommando le due dimensioni.
+
 
   ESEMPIO:
 
@@ -434,24 +438,26 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   IL MODULO:
    
   ha varie funzioni:
-  -(1)void inizializzaDSU: Ridimensiona il vettore padri al numero di nodi del grafo e inizializza ogni elemento 
-  facendo coincidere padre e indice del nodo stesso. All'inizio ogni nodo costituisce quindi un insieme separato.
-  -(2)int trovaRappresentante: questa funzione ricorsiva prende in input l'indice di un nodo e guarda il suo padre,
-   cioè se l'indice del nodo è i, guarda l'elemento i del vector padri:
-   se coincide con l'indice stesso, allora, per definizione, è il rappresentante, e lo restituisce, altrimenti
-   richiama la funzione su quell'elemento trovato. Andando avanti così, per le proprietà di costruzione,
-   si arriverà sempre a trovare un rappresentante.
-   Tuttavia, grazie alla path compression, durante il ritorno della ricorsione tutti i nodi attraversati
-   vengono collegati direttamente al rappresentante trovato. 
+  -(1)void inizializzaDSU: Ridimensiona i vettori "padri" e "dimensione" al numero di nodi del grafo. 
+   Inizializza ogni elemento di padri con l'indice del nodo stesso e ogni elemento di dimensione a 1. 
+   All'inizio ogni nodo costituisce un insieme separato di dimensione unitaria.
+  -(2)int trovaRappresentante: funzione ricorsiva che prende in input l'indice di un nodo e risale 
+   la catena dei padri fino a trovare il nodo rappresentante (quello che ha se stesso come padre). 
+   Durante il ritorno della ricorsione, viene applicata la path compression, cioè tutti i nodi visitati 
+   lungo il cammino vengono collegati direttamente al rappresentante (che diventa radice) trovato, 
+   appiattendo l'albero per le ricerche future.
   -(3)void unisci: prende in input gli indici di due nodi e ne trova i rispettivi rappresentanti 
-   con la funzione precedente. Se i rappresentanti sono uguali non fa niente, altrimenti sostituisce l'elemento
-   di indice uguale al rappresentante del secondo nodo del vector padri con il rappresentante del primo nodo. 
+   con la funzione (2). Se i rappresentanti coincidono, i nodi sono già nello stesso insieme e non fa
+   nulla. Altrimenti, applica la union by size, cioè confronta dimensione[rappresentante1] e 
+   dimensione[rappresentante2], aggancia il rappresentante dell'albero più piccolo sotto quello 
+   dell'albero più grande e somma le due dimensioni nella cella della radice vincente.
   -(4)void stampaDSU: stampa i nodi ed i rispettivi padri al momento della chiamata.
 
 
   STRUTTURE DATI UTILIZZATE:
 
   -vector<int> padri;
+  -vector<int> dimensione;
   -HashTable del modulo IndicizzazioneHashTable;
 
 
@@ -460,21 +466,55 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
 
   Se N è il numero di nodi della componente connesse maggiore, allora:
 
-  -la funzione (1) visita tutti i nodi una sola volta e compie numero costante di operazioni per iterazione,
-   dunque avrà complessità O(N);
-  -la funzione (2) risale ricorsivamente la catena dei padri. Nel caso peggiore tale catena può contenere N nodi. 
-   La complessità sarebbe dunque semplicemente O(N).
-   Tuttavia, con l'introduzione della path compression, le chiamate successive sugli stessi nodi 
-   risulteranno molto più veloci. Per questo motivo il costo di una singola operazione rimane O(N) 
-   nel caso pessimo, ma il costo ammortizzato su una lunga sequenza di chiamate, come avviene nel 
-   modulo CostruzioneMST, è molto inferiore e, nella pratica, risulta quasi costante.
+  -la funzione (1) esegue un ciclo di inizializzazione su N elementi con operazioni di costo costante, 
+   avendo dunque complessità O(N);
+  -la funzione (2) risale ricorsivamente la catena dei padri fino alla radice.
+   Dopo essere l'ottimizzazione con la Union by Size, poiché l'altezza massima degli alberi è limitata 
+   superiormente da log_2(N) (come sarà dimostrato formalmente nell'analisi della funzione 3), 
+   il costo di una singola ricerca nel caso peggiore scende immediatamente a O(logN).
+   Considerando anche l'ottimizzazione della path compression otteniamo che durante il ritorno 
+   della ricorsione, la funzione "appiattisce" l'albero collegando tutti i nodi attraversati 
+   direttamente alla radice. Sebbene una singola ricerca sfortunata possa comunque richiedere O(logN) 
+   passi nel caso peggiore, un risultato noto è che il costo ammortizzato su una sequenza di chiamate 
+   (come avviene durante la costruzione del MST) si abbatte drasticamente, diventando quasi costante 
+   e pari a O(alfa(N)), dove alfa(N) è la funzione inversa di Ackermann, che vale <5 per qualsiasi
+   input ragionevole.
   -la funzione (3) esegue due volte la funzione (2) e un numero costante di altre operazioni,
-   ne segue che la complessità sarà 2*O(N)+O(1)=O(N).
-   Tuttavia anche questa funzione viene molto ottimizzata dall'introduzione della path compression,
-   perché sfruttando i risultati della funzione precedente si può raggiungere un tempo quasi costante
-   anche per questa.  
+   Per evitare che gli alberi crescano in altezza in modo incontrollato, la funzione applica 
+   il metodo della union by size. Questa semplice regola garantisce che l'altezza degli alberi 
+   rimanga logaritmica rispetto al numero di nodi. Si può infatti dimostrare questo teorema.
 
-  Dunque sommando tutti i contributi, il modulo, dopo una prima ottimizzazione, avrà complessità O(N).
+   Teorema:
+   In una DSU gestita con Union by Size, un albero di altezza h contiene almeno 2^h nodi. 
+   Equivalentemente, un albero con s nodi ha un'altezza massima h<=log_2(s).
+
+   Dimostrazione per induzione sul numero di operazioni di Union:
+
+   Caso Base: All'inizio, ogni nodo è un albero isolato di altezza h=0 e dimensione s=1. 
+   La proprietà è banalmente verificata poiché 1>=2^0=1.
+
+   Passo Induttivo: Supponiamo che la proprietà sia valida per qualsiasi albero prima dell'unione 
+   corrente. Siano A1 e A2 due alberi disgiunti con dimensioni s1 e s2 e altezze h1 e h2, 
+   allora per ipotesi induttiva vale s1>=2^(h1) e s2>=2^(h2). Senza perdita di generalità, 
+   assumiamo che T1 sia l'albero con dimensione maggiore, cioè s1>=s2. 
+   Secondo la regola della Union by Size, la radice di T2 viene agganciata sotto la radice di T1. 
+   Il nuovo albero unificato avrà dimensione s'=s1+s2 e altezza h'=max(h1,h2+1). 
+   Si devono distinguere adesso due casi per l'altezza:
+
+   Se h1>h2: L'altezza del nuovo albero non subisce variazioni, quindi h'=h1. 
+   Applicando l'ipotesi induttiva su T1 otteniamo direttamente s'>s1>=2^(h1)=2^(h').
+   
+   Se h1<=h2: L'albero T2, essendo stato appeso sotto la radice di T1, aumenta la sua altezza di 1, 
+   perciò la nuova altezza complessiva sarà determinata da questo ramo, e risulterà h'=h2+1. 
+   Poiché stiamo usando la union by size e abbiamo assunto s1>=s2, la nuova dimensione s' soddisfa:
+   s'=s1+s2>=s2+s2=2*s2. Sfruttando l'ipotesi induttiva su T2 (s2>=2^(h2)), ricaviamo 
+   s'>=2*2^(h2)=2^(h2 + 1)=2^(h').
+   
+   Ed ecco dunque dimostrata la proprietà. 
+   La complessità della funzione (3) unisci è interamente dominata dal costo 
+   delle due chiamate a trovaRappresentante. Essa richiede quindi O(logN) nel caso peggiore e, 
+   grazie anche all'azione combinata della path compression, un costo ammortizzato quasi costante 
+   pari a O(alfa(N)) su una lunga sequenza di operazioni.  
 
 
 
@@ -568,37 +608,27 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   -la funzione (3) chiama il MergeSort(4) su un vettore di dimensione D, dunque per le proprietà note 
    di (4), avrà complessità O(DlogD)
   -la funzione (5) chiama 1 volta (6), poi, per ogni arco della componente connessa maggiore,chiama 2 volte (7) e 
-   1 volta (8). Dall'analisi già svolta nel modulo ControlloDSU, sappiamo che (6)=O(N), (7)=O(N), (8)=O(N),
-   dunque avrà complessità O(N) + D*(3*O(N))=O(D*N).
-   Questa stima rimane invariata anche dopo l'introduzione della path compression, infatti una singola 
-   chiamata a trovaRappresentante può ancora richiedere, nel caso peggiore, di attraversare una 
-   catena di padri lunga O(N). Tuttavia, la path compression modifica la struttura della DSU durante 
-   l'esecuzione, facendo puntare direttamente al rappresentante tutti i nodi attraversati.
-   Di conseguenza, quando la funzione viene richiamata molte volte, come in questo caso, le ricerche 
-   successive risultano generalmente molto più rapide rispetto alle precedenti. Anche se la stima teorica
-   nel caso peggiore rimane invariata, il costo reale dell'algoritmo risulta quindi
-   sensibilmente inferiore rispetto alla versione priva di path compression.
+   al più 1 volta (8). Sfruttando i risultati dimostrati nel modulo ControlloDSU per una DSU ottimizzata 
+   con union by size e path compression, il costo per fare le D operazione non è più O(D*N), 
+   ma nel caso peggiore è O(D*logN), e considerando il costo ammortizzato su tante chiamate, 
+   le chiamate alla DSU richiedono complessivamente tempo O(D*alfa(N)), che praticamente equivale a 
+   O(D) per le proprietà della funziona alfa.
 
-  -La complessità generale del modulo risulta quindi O(N)+O(M)+O(DlogD)+O(D*N). Si può modificare la stima
-   rendendola meno precisa ma dipendente da meno parametri. Si ha come ipotesi D <= M, in quanto 
+  -La complessità generale del modulo risulta quindi O(N)+O(M)+O(DlogD)+O(D). 
+   Si può modificare la stima rendendola meno precisa ma dipendente da meno parametri. 
+   
+   Si ha come ipotesi D <= M, in quanto 
    il numero di archi della componente connessa maggiore è sicuramente inferiore o uguale al numero di archi totali,
    e M <= N*(N-1)/2, perché il numero massimo di archi che si possono avere dati N nodi è proprio quello, ottenuto 
    ipotizzando che il primo nodo possa avere massimo N-1 archi, il secondo possa averne massimo altri N-2, 
    perché ho già contato quello col primo, e così via. Contandoli si ottiene infatti la somma dei primi N-1 
-   numeri naturali che si può scrivere come (N-1)(N-1 + 1)/2 = N(N-1)/2. Dato che si fanno questi
-   ragionamenti per dataset di grandi dimensioni, si possono ipotizzare N,M,D che tendono a infinito, e dunque
-   tradurre le nostre ipotesi in D=O(M), M=O(N^2). Si vuole dimostrare che DlogD=O(M*N) e D*N=O(M*N).
-   Si parte da DlogD, 
-   si sfrutta la proprietà per cui se una funzione f è O(N^k), allora il suo logaritmo logf sarà O(log(N^k)), 
-   che si può ricavare partendo dalla definizione di O grande, e qui si ha D=O(M) e M=O(N^2),
-   e se si combinano restituiscono anche D=O(M)=O(O(N^2))=O(N^2).
-   Si può così affermare che DlogD=O(M)*O(log(N^2)), che si può riscrivere come O(M)*O(2*logN), e dunque mettendo
-   insieme e sfruttando le proprietà dell'O grande, si ottiene DlogD=O(MlogN). Sapendo che logN=O(N), nelle ipotesi
-   date, allora DlogD=O(M*O(N)), che per le proprietà dell'O grande si può riscrivere come O(M*N). Abbiamo così
-   ottenuto DlogD=O(M*N).
-   Per D*N basta sostituire D=O(M) per ottenere D*N=O(M)*N=O(M*N).
+   numeri naturali che si può scrivere come (N-1)(N-1 + 1)/2 = N(N-1)/2. 
+   
+   Si ottiene dunque che D=O(M) e M=O(N^2). Per le proprietà dei logaritmi si ha che 
+   logD=O(log(N^2))=O(2*logN)=O(logN). Moltiplicando per D, sapendo che D=O(M), otteniamo:
+   O(D*logD)=O(MlogN).
 
-   Perciò si può stimare che il modulo ha complessità totale O(N)+O(M)+O(M*N)+O(M*N)=O(M*N).
+   Perciò si può stimare che il modulo ha complessità totale O(MlogN).
 
  
 
