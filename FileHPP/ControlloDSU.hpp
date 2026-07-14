@@ -51,10 +51,14 @@ int trovaRappresentante(int indiceNodo)
     //quindi,chiamata la funzione trovaRappresentante, posso fare return nodo 
     else 
     {
-        return trovaRappresentante(padri[indiceNodo]);
-        //se il nodo non è il rappresentante, allora guardo se lo è suo padre, e così via,
-        //il rappresentante che trovo sarà il rappresentante del mio nodo di partenza 
-        //(e anche degli altri della catena)
+        padri[indiceNodo] = trovaRappresentante(padri[indiceNodo]);
+        return padri[indiceNodo];
+        //Risalgo ricorsivamente fino al rappresentante dell'insieme e durante il ritorno 
+        //della ricorsione aggiorno direttamente il padre del nodo corrente con il rappresentante trovato.
+        //In questo modo le future ricerche saranno molto più veloci, perché la catena dei padri 
+        //viene progressivamente "schiacciata". Questo sarà utile soprattutto quando nel modulo
+        //CostruzioneMST dovremmo chiamare tante volte questa funzione.
+        //Questa strategia si chiama path compression.
     }
 
 }
