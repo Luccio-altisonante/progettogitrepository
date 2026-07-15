@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include "../FileHPP/LettoreDataset.hpp"
 #include "../FileHPP/IndicizzazioneHashTable.hpp"
 #include "../FileHPP/CostruzioneGrafo.hpp"
@@ -13,7 +14,12 @@ using namespace std;
 
 int main()
 {
-    leggiDataset("FileInput/datasetprova.txt");
+    string nomeFile;
+
+    cout << "Inserisci il nome del file presente nella cartella FileInput: ";
+    cin >> nomeFile;
+
+    leggiDataset("FileInput/" + nomeFile);
 
     cout << endl;
     cout << "Cammini letti dal file:" << endl;
@@ -139,12 +145,31 @@ int main()
     stampaGrafoMST();
 
     cout << endl;
-    cout << "Valore minimax tra 1 e 7: " << trovaMinimax(1, 7) << endl;
-    cout << "Valore minimax tra 1 e 6: " << trovaMinimax(1, 6) << endl;
-    cout << "Valore minimax tra 3 e 5: " << trovaMinimax(3, 5) << endl;
-    cout << "Valore minimax tra 1 e 20: " << trovaMinimax(1, 20) << endl;
-    cout << "Valore minimax tra 1 e 30: " << trovaMinimax(1, 30) << endl;
-    cout << "Valore minimax tra 21 e 20: " << trovaMinimax(21, 20) << endl;
+    cout << "Esempi di alcuni percorsi minimax con nodi casuali del dataset:" << endl;
+    cout << endl;
+
+    int i = 0;
+
+    while (i < 4)
+    {
+        int indice1 = rand() % tabella.numeroNodiDistinti();
+        int indice2 = rand() % tabella.numeroNodiDistinti();
+
+        int nodo1 = tabella.cercaNodoReale(indice1);
+        int nodo2 = tabella.cercaNodoReale(indice2);
+
+        int minimax = trovaMinimax(nodo1, nodo2);
+        
+        
+        if ((minimax != -1) && (minimax != -2) && (minimax != 0))
+        {
+            cout << "Percorso minimax fra " << nodo1 << " e " << nodo2 << ": ";
+            cout << minimax;
+            cout << endl;
+            i++;
+        }
+        
+    }
 
     //fin qui prova di RisoluzioneMinimax
 
