@@ -172,9 +172,9 @@ public:
 vector<ArcoPesatoIndicizzato> archipesati;
 //vector contenente tutti gli archi pesati
 
-HashTableArchiPesati tabellaArchi(3);
-//per ora di dimensione piccola per il mio dataset e per testare il reash,
-//poi diventerà di dimensione proporzionale a archi.size()
+HashTableArchiPesati tabellaArchi(50021);
+//inizializzo la tabella ad una dimensione grande e prima, se servirà più spazio
+//verranno eseguiti dei rehash
 
 void costruisciarchipesati()
 {

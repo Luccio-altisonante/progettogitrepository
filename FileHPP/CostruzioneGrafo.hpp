@@ -10,14 +10,16 @@
 using namespace std;
 
 vector<pair<int, int>> archi;
-// vettore contenente tutti gli archi
+//vettore contenente tutti gli archi
 
 vector<vector<int>> grafoadj;
-// grafo rappresentato tramite liste di adiacenza
-// intanto metto 100 come numero indicativo,
-// poi subentreeranno le hash table per i nodi grandi
+//grafo rappresentato tramite liste di adiacenza
+//intanto metto 100 come numero indicativo,
+//poi subentreeranno le hash table per i nodi grandi
 
-HashTable tabella(5);
+HashTable tabella(50021);
+//inizializzo la tabella ad una dimensione grande e prima, se servirà più spazio
+//verranno eseguiti dei rehash
 
 void costruisciArchi()
 {
