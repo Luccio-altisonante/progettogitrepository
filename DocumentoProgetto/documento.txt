@@ -24,7 +24,7 @@ Idea di base del progetto completo rivisitata:
 L'idea è dividere il lavoro in moduli separati:
 
 - lettura dei dataset;
-- indicizzazione dei nodi mediante hash table;
+- indicizzazione dei nodi e memorizzazione mediante hash table;
 - costruzione del grafo;
 - gestione delle frequenze sugli archi;
 - ricerca della componente connessa maggiore;
@@ -59,9 +59,10 @@ inoltre il progetto sarà più leggibile e dunque più facile da rimaneggiare ne
 In particolare, il programma verrà quindi eseguito a partire dal solo main.cpp, 
 che includerà progressivamente tutti i moduli del progetto.
 
-Ho scelto di mettere per adesso all'interno dei file.hpp anche le implementazioni,
+Ho scelto di mettere all'interno dei file.hpp anche le implementazioni,
 e non più solo le dichiarazioni, per facilitare l'esecuzione del programma da terminale.
-Dato che con questa struttura i file .cpp, main escluso, erano diventati pressoché inutili, li ho rimossi.
+Dato che con questa struttura i file .cpp corrispettivi dei file.hpp, main escluso, 
+erano diventati pressoché inutili, li ho rimossi.
 
 
 I moduli saranno:
@@ -76,8 +77,9 @@ I moduli saranno:
 - "RisoluzioneMinimax".
 
 
-
-
+Nella cartella FileInput sono presenti tre file del dataset CAIDA, nel formato .all-paths, 
+utilizzati per i test sul dataset reale, oltre al file datasetprova.txt, 
+costruito artificialmente per verificare il corretto funzionamento dei singoli moduli durante lo sviluppo.
 
 
 
@@ -88,38 +90,40 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   la funzionalità di tutti i moduli.
 
   Il main:
-  -grazie all'include riesce a vedere i vari moduli;
-  -prende in input "datasetprova.txt" dalla cartella FileInput;
-  -legge il dataset grazie alla funzione implementata in LettoreDataset.hpp;
-  -stampa il risultato ottenuto, ossia i cammini presenti in datasetprova.txt;
-  -indicizza i nodi e li salva con una HashTable, per poi stampare il risultato grazie alle funzioni implementate in IndicizzazioneHashTable.hpp;  
-  -costruisce e stampa gli archi e il grafo grazie alle funzioni implementate in CostruzioneGrafo.hpp;
-  -costruisce e stampa gli archi pesati grazie alle funzioni implementate in GestioneFrequenze.hpp;
+  -grazie agli include rende disponibili tutti i moduli del progetto;
+  -chiede all'utente il nome del dataset presente nella cartella FileInput;
+  -legge il dataset tramite LettoreDataset.hpp;
+  -indicizza i nodi e li salva con una HashTable, grazie alle funzioni implementate in IndicizzazioneHashTable.hpp;  
+  -costruisce gli archi e il grafo grazie alle funzioni implementate in CostruzioneGrafo.hpp;
+  -costruisce gli archi pesati grazie alle funzioni implementate in GestioneFrequenze.hpp;
   -trova la componente connessa maggiore grazie alle funzioni implementate in ComponentiConnesse.hpp;
-  -simula delle operazioni sui nodi e verifica che la DSU ne tenga traccia con le funzioni implementate in ControlloDSU.hpp;
-  -seleziona e ordina gli archi della CCM e costruisce l'MST, stampando il risultato di ogni passaggio,
-   grazie alle funzioni implementate in CostruzioneMST.hpp.
+  -seleziona e ordina gli archi della CCM e costruisce l'MST, grazie alle funzioni implementate in 
+   CostruzioneMST.hpp. e ControlloDSU.hpp;
+  -mostra alcuni esempi di percorsi minimax tra coppie casuali di nodi della CCM del dataset, grazie
+   alle funzioni implementate in RisoluzioneMinimax.hpp; 
+  -permette infine all'utente di inserire coppie di nodi e restituisce il corrispondente valore minimax.
 
 
 
 -"LettoreDataset":
-  Ho implementato una prima versione. Il modulo legge un file di testo, 
-  contenente cammini BGP rappresentati come sequenze di interi separati da spazi, e li
-  traduce in vector di interi.
+  Ho implementato il modulo che legge i file ".all-paths" del dataset CAIDA.
+  Ogni riga del dataset contiene varie informazioni, ma il modulo usa solamente la sequenza 
+  di Autonomous Systems, ignorando il resto della riga.
 
 
   ESEMPIO:
 
-  Riga del dataset: 1 2 5
-  Rappresenta il cammino: 1 -> 2 -> 5
-  Viene tradotta in: [1,2,5]
+  Riga del dataset: routeviews/routeviews|5 3561|701|816 209.47.100.0/24 i 204.70.4.89
+  Rappresenta il cammino: 3651 -> 701 -> 816
+  Viene tradotta in: [3651,701,816]
 
 
   IL MODULO:
 
   -apre il file;
   -legge una riga alla volta;
-  -estrae i numeri presenti nella riga;
+  -separa l'intestazione dall'AS-path;
+  -estrae i numeri identificativi degli AS cifra dopo cifra, separati da '|';
   -aggiunge ogni numero al vector del cammino corrente;
   -terminati i numeri della riga, salva il cammino dentro il vector di vector cammini.
 
@@ -132,7 +136,8 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
   
   COMPLESSITÀ:
 
-  La complessità è chiaramente lineare col numero di cammini nel file in input.
+  Se N è il numero di nodi nei cammini del dataset, allora:
+  ogni nodo viene letto ed inserito nel vettore una sola volta, perciò la complessità è chiaramente O(N).
 
 
 -"IndicizzazioneHashTable":
@@ -700,3 +705,11 @@ Di seguito sono fornite spiegazioni dettagliate per ogni modulo.
 
   La complessità totale del modulo risulta quindi O(N)+O(N)+O(N)=O(N).
 
+
+
+
+
+Considerando N numero di nodi del grafo ed M numero di archi del grafo:
+la complessità complessiva per costruire la struttura dati è dunque O(MlogM), dovuta all'ordinamento di
+un vettore per la costruzione dell'MST. 
+Successivamente, la ricerca di ogni nuovo percorso minimax richiede solamente O(N) ciascuna.
