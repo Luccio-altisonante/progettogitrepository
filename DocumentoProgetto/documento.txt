@@ -2,6 +2,7 @@ PROGETTO ASD 2025/2026 Luca Montanelli 690125
 
 Analisi di grafi di Autonomous Systems (AS).
 
+Nel README ci sono le indicazioni per avviare il programma.
 
 Obiettivo del progetto:
 
